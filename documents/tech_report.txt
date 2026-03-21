@@ -1,0 +1,191 @@
+
+ 
+COASTAL INNOVATION SUMMIT
+Full Stack Website
+Technical Architecture & Design Report
+
+ 
+ 
+Prepared by Ayaan Siddique  |  Coastal Innovation Summit  |  Confidential
+
+
+Table of Contents
+
+Note: Update this table of contents in Word by right-clicking and selecting 'Update Field' after opening the document.
+ 
+1.  Executive Summary	3
+2.  Project Overview & Objectives	3
+3.  Technology Stack	4
+4.  Frontend Architecture	5
+5.  Backend Architecture	7
+6.  Database Design	9
+7.  Security Architecture	10
+8.  Registration & Payment Flow	12
+9.  DevOps & CI/CD Pipeline	13
+10.  Environment Variables Reference	14
+11.  Budget Breakdown	15
+12.  Monitoring & Logging	16
+13.  Recommended Build Order	16
+14.  Security Checklist (Pre-Launch)	17
+
+1. Executive Summary
+
+This report presents the complete technical architecture, system design, security framework, and infrastructure plan for the Coastal Innovation Summit website. The platform handles attendee registrations, speaker applications, stall bookings, partner and investor pages, and all public-facing event content.
+ 
+The architecture is built on the MERN stack (MongoDB, Express.js, React, Node.js) and is engineered for zero monthly operating cost using permanent free-tier cloud services. The total cash budget is ₹700 — used entirely for transactional email via Brevo. All hosting, CDN, database, CI/CD, and monitoring services run on free tiers at no cost.
+ 
+Security is implemented in ten independent layers covering DDoS, MITM, XSS, NoSQL injection, brute force, JWT theft, fake payments, CSRF, secret leakage, and data loss. Performance targets are Lighthouse score 95+, LCP under 1.5 seconds, and AVIF image delivery via Cloudflare.
+ 
+2. Project Overview & Objectives
+
+2.1  Goals
+Provide a fast, premium, animated public website for the Coastal Innovation Summit
+Automate attendee registration with Razorpay payment integration
+Export all form submissions to Google Sheets in real time
+Support speaker applications, stall bookings, and competition entries
+Deliver a secure platform at zero recurring cost using free-tier services
+Achieve Lighthouse 95+ performance using AVIF, code splitting, and CDN
+ 
+2.2  Scope Summary
+
+3. Technology Stack
+
+3.1  Why MERN
+Single language (JavaScript) across frontend, backend, and database layer
+Native JSON between React, Express, and MongoDB — no serialisation overhead
+Vercel and Render both have zero-config Node.js + React deployments
+Largest open-source ecosystem — every required library exists as an npm package
+ 
+3.2  Complete Library Reference
+
+4. Frontend Architecture
+
+4.1  Page Structure (11 Pages)
+ 
+4.2  Hero Section Components
+The hero is the primary conversion surface. It must render above the fold with LCP under 1.5 seconds. Required elements:
+Full-viewport AVIF background image with WebP fallback via <picture> tag
+Event name in large bold typography — entrance animation via Framer Motion
+Live countdown timer: days, hours, minutes, seconds — updates every second
+Two large primary CTAs: Register Now (→ /register) and View Schedule (→ /sessions)
+Horizontal auto-scrolling speaker strip with headshots and names
+Stats row: attendee count, speaker count, session count, partner logos count
+ 
+4.3  Animation Strategy
+ 
+4.4  Performance Strategy
+
+5. Backend Architecture
+
+5.1  Folder Structure
+ 
+5.2  Middleware Stack — Execution Order
+Every request passes through this chain in order before reaching any route handler:
+Helmet.js — attaches all security HTTP headers to every response
+CORS — validates Origin header against the strict allowlist
+express.json() — parses body with 10KB size limit (prevents large payload attacks)
+Rate limiter — per-IP, per-route limits (see Section 7.4)
+JWT verify middleware — on all protected routes only
+Zod schema validation — on all POST / PUT routes
+Route handler — pure business logic, no security logic here
+Global error handler — catches all unhandled errors, logs to Sentry, returns safe JSON
+ 
+5.3  API Endpoints
+
+6. Database Design — MongoDB Atlas
+
+6.1  Cluster Configuration
+ 
+6.2  Collections and Schema Fields
+ 
+6.3  Backup Strategy
+Primary — Atlas automated daily snapshots (free, 2-day retention)
+Secondary — Google Sheets live mirror: every form submission appends a row instantly
+Tertiary — Render cron job (free) runs nightly: exports registrations collection as JSON to a private Google Drive folder
+
+7. Security Architecture
+
+The security model uses defence-in-depth: ten independent layers each blocking a distinct threat class. Failure of any single layer does not expose the system because the next layer still blocks the attack.
+ 
+7.1  Threat Matrix — 10 Layers
+ 
+7.2  Helmet.js Configuration
+ 
+7.3  Razorpay HMAC Verification Code
+This is the most critical security check. Registration is never confirmed until this passes on the server.
+ 
+7.4  Rate Limit Parameters
+
+8. Registration & Payment Flow
+
+8.1  Attendee Registration — End-to-End Steps
+User completes multi-step form on /register (React Hook Form, client-side Zod validation)
+On final step, frontend sends POST /register/attendee with validated form data
+Server middleware chain runs: CORS → rate limit → Zod schema validation
+Controller calls Razorpay SDK: createOrder(amount, currency, receipt)
+Server returns { orderId, amount, currency } to frontend
+Frontend opens Razorpay checkout modal with the orderId
+User completes payment (card / UPI / wallet / netbanking)
+Razorpay sends webhook POST to /payment/verify on the server
+Server verifies HMAC signature using crypto.timingSafeEqual — rejects if invalid
+On verified success: (a) save registration to MongoDB, (b) append row to Google Sheet, (c) generate QR code, (d) send confirmation email via Brevo with QR attachment
+Frontend receives 200 response, redirects user to /register/success with ticket summary
+ 
+8.2  Google Sheets — Export Columns per Tab
+
+9. DevOps & CI/CD Pipeline
+
+9.1  Hosting Services
+ 
+9.2  GitHub Actions CI/CD Workflow
+ 
+9.3  Branch Strategy
+
+10. Environment Variables — Complete Reference
+
+All secrets live exclusively in Render (backend) and Vercel (frontend) environment variable dashboards. The .env file must be in .gitignore and must never be committed.
+ 
+10.1  Server — Render Environment Variables
+ 
+10.2  Client — Vercel Environment Variables
+
+11. Budget Breakdown
+
+ 
+ 
+
+12. Monitoring & Logging
+
+ 
+13. Recommended Build Order
+
+This sequence validates the core payment flow first before investing time in content pages and visual polish.
+ 
+Create MongoDB Atlas cluster, collections, generate connection string
+Set up Google Sheets with five tabs, create service account, test Sheets API append
+Build Express server boilerplate with Helmet, CORS, rate limiter, global error handler
+Implement Razorpay: order creation endpoint + HMAC webhook verification
+Build /register route + controller + Google Sheets export service
+Build Brevo email service — confirmation email with QR code attachment
+Deploy backend to Render, set all env vars, test full registration flow end-to-end
+Build React app with Vite — home page hero + countdown timer + registration form
+Wire frontend registration form to backend API — test full payment in Razorpay sandbox
+Build remaining 10 pages: about, sessions, speakers, partners, investors, contact, stall, speaker-apply, competition, FAQ
+Add animations: Framer Motion transitions, GSAP ScrollTrigger reveals, Lenis scroll
+Convert all images to AVIF at build time using Sharp
+Deploy frontend to Vercel, connect custom domain, configure Cloudflare DNS
+Set up GitHub Actions CI/CD with lint + test checks on main branch
+Configure UptimeRobot for /health. Verify Sentry receiving events.
+Run Lighthouse audit — hit 95+ on Performance
+Switch Razorpay from test mode to live mode
+Final end-to-end QA: register, pay, receive email, check Google Sheet populated
+Go live
+
+14. Security Checklist — Pre-Launch
+
+Complete every item below before switching Razorpay to live mode and accepting real payments.
+ 
+ 
+End of Report
+Prepared and submitted by Ayaan Siddique
+Coastal Innovation Summit  |  Technical Architecture Report  |  Version 1.0
