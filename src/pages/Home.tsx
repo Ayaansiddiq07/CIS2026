@@ -7,11 +7,15 @@ import StatsCounter from '../components/StatsCounter';
 
 export default function Home() {
   const [slideIn, setSlideIn] = useState(false);
+  const [floating, setFloating] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setSlideIn(true), 50);
-    return () => clearTimeout(t);
-  }, []);  return (
+    const t1 = setTimeout(() => setSlideIn(true), 50);
+    const t2 = setTimeout(() => setFloating(true), 1200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  return (
     <>
       <style>{`
         .hero-img {
@@ -22,6 +26,15 @@ export default function Home() {
         .hero-img.slide-in {
           opacity: 1;
           transform: translateX(0);
+        }
+        .hero-img.floating {
+          transition: none !important;
+          transform: none !important;
+          animation: heroBob 3.5s ease-in-out infinite;
+        }
+        @keyframes heroBob {
+          0%, 100% { translate: 0 0; }
+          50% { translate: 0 -4px; }
         }
       `}</style>
 
@@ -72,7 +85,7 @@ export default function Home() {
               <img
                 src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
                 alt="Coastal Innovation Summit 3D Model"
-                className={`w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square object-contain hero-img${slideIn ? ' slide-in' : ''}`}
+                className={`w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square object-contain hero-img${slideIn ? ' slide-in' : ''}${floating ? ' floating' : ''}`}
                 width={420}
                 height={420}
                 loading="eager"
