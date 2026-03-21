@@ -54,11 +54,11 @@ export default function AnimatedNavbar() {
         <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-brand-accent via-brand-red to-amber-500" />
 
         <div className="max-w-7xl mx-auto px-5 lg:px-12 flex items-center justify-between">
-          <Link to="/" className="z-50 shrink-0 bg-white rounded-full p-1 shadow-md">
+          <Link to="/" className="z-50 shrink-0 bg-white rounded-full p-1 shadow-md group transition-shadow duration-300 hover:shadow-lg hover:shadow-brand-accent/20">
             <img
               src="/logo.avif"
               alt="CIS"
-              className="h-[42px] w-[42px] md:h-[50px] md:w-[50px] object-cover rounded-full"
+              className="h-[42px] w-[42px] md:h-[50px] md:w-[50px] object-cover rounded-full transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
               width={50}
               height={50}
               loading="eager"
