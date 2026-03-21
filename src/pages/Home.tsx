@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MapPin, ArrowRight, Gamepad2, MessageSquare, Rocket, Store } from 'lucide-react';
 import CountdownTimer from '../components/CountdownTimer';
 import StatsCounter from '../components/StatsCounter';
+
+const HeroModel3D = lazy(() => import('../components/HeroModel3D'));
 
 export default function Home() {
   const [slideIn, setSlideIn] = useState(false);
@@ -16,12 +18,12 @@ export default function Home() {
   return (
     <>
       <style>{`
-        .hero-img {
+        .hero-wrapper {
           opacity: 0;
           transform: translateX(-50px);
           transition: opacity 0.9s ease-out, transform 0.9s ease-out;
         }
-        .hero-img.slide-in {
+        .hero-wrapper.slide-in {
           opacity: 1;
           transform: translateX(0);
         }
@@ -69,18 +71,19 @@ export default function Home() {
         <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 pt-24 md:pt-32 pb-8 md:pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
-            {/* Left: 3D Model — simple class toggle: slide-in → float */}
-            <div className="flex items-center justify-center order-2 lg:order-1">
-              <img
-                src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
-                alt="Coastal Innovation Summit 3D Model"
-                className={`w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square object-contain hero-img${slideIn ? ' slide-in' : ''}`}
-                width={420}
-                height={420}
-                loading="eager"
-                decoding="async"
-                fetchPriority="high"
-              />
+            {/* Left: 3D Model via Three.js — float animation in WebGL, zero CSS conflict */}
+            <div className={`flex items-center justify-center order-2 lg:order-1 hero-wrapper${slideIn ? ' slide-in' : ''}`}>
+              <Suspense fallback={
+                <img
+                  src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
+                  alt="Coastal Innovation Summit 3D Model"
+                  className="w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square object-contain"
+                  width={420}
+                  height={420}
+                />
+              }>
+                <HeroModel3D />
+              </Suspense>
             </div>
 
             {/* Right: Text Content */}
