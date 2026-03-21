@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MapPin, ArrowRight, Gamepad2, MessageSquare, Rocket, Store } from 'lucide-react';
@@ -8,27 +8,8 @@ import StatsCounter from '../components/StatsCounter';
 const HeroModel3D = lazy(() => import('../components/HeroModel3D'));
 
 export default function Home() {
-  const [slideIn, setSlideIn] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setSlideIn(true), 50);
-    return () => clearTimeout(t);
-  }, []);
-
   return (
     <>
-      <style>{`
-        .hero-wrapper {
-          opacity: 0;
-          transform: translateX(-50px);
-          transition: opacity 0.9s ease-out, transform 0.9s ease-out;
-        }
-        .hero-wrapper.slide-in {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      `}</style>
-
       {/* Event Schema Structured Data (JSON-LD for SEO) */}
       <script
         type="application/ld+json"
@@ -72,7 +53,12 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
             {/* Left: 3D Model via Three.js — float animation in WebGL, zero CSS conflict */}
-            <div className={`flex items-center justify-center order-2 lg:order-1 hero-wrapper${slideIn ? ' slide-in' : ''}`}>
+            <motion.div 
+              variants={{ hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } } }}
+              initial="hidden"
+              animate="visible"
+              className="flex items-center justify-center order-2 lg:order-1 hero-wrapper"
+            >
               <div className="w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square">
                 <Suspense fallback={
                   <img
@@ -86,7 +72,7 @@ export default function Home() {
                   <HeroModel3D />
                 </Suspense>
               </div>
-            </div>
+            </motion.div>
 
             {/* Right: Text Content */}
             <motion.div
