@@ -81,12 +81,6 @@
   }
 }
 
-/* Hero image float keyframe (referenced via inline style, immune to Tailwind purging) */
-@keyframes heroFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

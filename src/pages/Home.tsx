@@ -60,27 +60,29 @@ export default function Home() {
     <div className="relative min-h-screen bg-brand-surface selection:bg-brand-accent/20">
       
       {/* 1. Hero Section */}
-      <section className="relative min-h-[90vh] w-full flex flex-col justify-center overflow-hidden bg-brand-surface border-b border-slate-200">
+      <section className="relative w-full flex flex-col justify-center overflow-hidden bg-brand-surface border-b border-slate-200 min-h-0 lg:min-h-[90vh]">
         <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 pt-24 md:pt-32 pb-8 md:pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
             {/* Left: 3D Model Image */}
-            <motion.div
-              initial={{ opacity: 0, x: -80, scale: 0.92 }}
-              animate={mounted ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -80, scale: 0.92 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            <div
               className="flex items-center justify-center order-2 lg:order-1"
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? 'translateX(0) scale(1)' : 'translateX(-50px) scale(0.95)',
+                transition: 'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
             >
               <img
                 src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
                 alt="Coastal Innovation Summit 3D Model"
                 className="w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] h-auto"
-                style={mounted ? { animation: 'heroFloat 4s ease-in-out 1s infinite' } : undefined}
+                style={mounted ? { animation: 'heroFloat 4s ease-in-out 1.2s infinite' } : undefined}
                 loading="eager"
                 decoding="async"
                 fetchPriority="high"
               />
-            </motion.div>
+            </div>
 
             {/* Right: Text Content */}
             <motion.div
@@ -107,7 +109,7 @@ export default function Home() {
                 COASTAL<br />
                 INNOVATION<br />
                 <span className="text-brand-accent">SUMMIT</span>
-                <span className="text-brand-red">{`\`26`}</span>
+                <span className="text-brand-red">'26</span>
               </motion.h1>
               
               <motion.div 
@@ -197,8 +199,8 @@ export default function Home() {
             <p className="text-[15px] text-slate-600 font-medium max-w-lg">While the main stage hosts zero-fluff talks, our parallel activity zones focus on interaction, learning by doing, and open networking. Operating side-by-side to ensure continuous engagement.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 border border-slate-200">
-            <div className="bg-white p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-accent group">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-px lg:bg-slate-200 border border-slate-200">
+            <div className="bg-white p-6 sm:p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-accent group">
               <div className="w-12 h-12 bg-slate-100 flex items-center justify-center mb-5 transition-colors group-hover:bg-brand-accent">
                 <Gamepad2 className="w-5 h-5 text-slate-700 group-hover:text-white transition-colors" />
               </div>
@@ -206,7 +208,7 @@ export default function Home() {
               <p className="text-[13px] text-slate-600 font-medium leading-relaxed">A large-format interactive game covering ideation, funding, legal basics, and scaling. Answer business questions to climb!</p>
             </div>
             
-            <div className="bg-white p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-red group">
+            <div className="bg-white p-6 sm:p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-red group">
               <div className="w-12 h-12 bg-slate-100 flex items-center justify-center mb-5 transition-colors group-hover:bg-brand-red">
                 <MessageSquare className="w-5 h-5 text-slate-700 group-hover:text-white transition-colors" />
               </div>
@@ -214,7 +216,7 @@ export default function Home() {
               <p className="text-[13px] text-slate-600 font-medium leading-relaxed">Moderated sessions designed to encourage critical thinking and argumentation on the hardest topics in the startup ecosystem.</p>
             </div>
 
-            <div className="bg-white p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-accent group">
+            <div className="bg-white p-6 sm:p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-accent group">
               <div className="w-12 h-12 bg-slate-100 flex items-center justify-center mb-5 transition-colors group-hover:bg-brand-accent">
                 <Rocket className="w-5 h-5 text-slate-700 group-hover:text-white transition-colors" />
               </div>
@@ -222,7 +224,7 @@ export default function Home() {
               <p className="text-[13px] text-slate-600 font-medium leading-relaxed">A rapid team-based ideation activity. Form teams instantly, structure a startup concept, and present it before time runs out.</p>
             </div>
 
-            <div className="bg-white p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-red group">
+            <div className="bg-white p-6 sm:p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-red group">
               <div className="w-12 h-12 bg-slate-100 flex items-center justify-center mb-5 transition-colors group-hover:bg-brand-red">
                 <Store className="w-5 h-5 text-slate-700 group-hover:text-white transition-colors" />
               </div>
