@@ -73,17 +73,19 @@ export default function Home() {
             
             {/* Left: 3D Model via Three.js — float animation in WebGL, zero CSS conflict */}
             <div className={`flex items-center justify-center order-2 lg:order-1 hero-wrapper${slideIn ? ' slide-in' : ''}`}>
-              <Suspense fallback={
-                <img
-                  src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
-                  alt="Coastal Innovation Summit 3D Model"
-                  className="w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square object-contain"
-                  width={420}
-                  height={420}
-                />
-              }>
-                <HeroModel3D />
-              </Suspense>
+              <div className="w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square">
+                <Suspense fallback={
+                  <img
+                    src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
+                    alt="Coastal Innovation Summit 3D Model"
+                    className="w-full h-full object-contain"
+                    width={420}
+                    height={420}
+                  />
+                }>
+                  <HeroModel3D />
+                </Suspense>
+              </div>
             </div>
 
             {/* Right: Text Content */}
