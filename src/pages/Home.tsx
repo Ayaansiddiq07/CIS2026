@@ -22,18 +22,24 @@ export default function Home() {
           opacity: 0;
           transform: translateX(-50px);
           transition: opacity 0.9s ease-out, transform 0.9s ease-out;
+          display: block;
+          contain: layout style paint;
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
         }
         .hero-img.slide-in {
           opacity: 1;
           transform: translateX(0);
         }
         .hero-img.floating {
-          transition: none;
+          transition: none !important;
+          transform: none;
           animation: heroBob 3.5s ease-in-out infinite;
+          will-change: transform;
         }
         @keyframes heroBob {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-6px); }
+          0%, 100% { transform: translate3d(0, 0, 0); }
+          50% { transform: translate3d(0, -4px, 0); }
         }
       `}</style>
 
@@ -84,7 +90,9 @@ export default function Home() {
               <img
                 src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
                 alt="Coastal Innovation Summit 3D Model"
-                className={`w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] h-auto hero-img${slideIn ? ' slide-in' : ''}${float ? ' floating' : ''}`}
+                className={`w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square object-contain hero-img${slideIn ? ' slide-in' : ''}${float ? ' floating' : ''}`}
+                width={420}
+                height={420}
                 loading="eager"
                 decoding="async"
                 fetchPriority="high"
