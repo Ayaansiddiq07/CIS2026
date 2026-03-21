@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-red: #ff4d4d; /* Energetic Startup Red/Orange */
-  --color-brand-ocean: #0f172a; /* Slate 900 for dark text */
-  --color-brand-accent: #0da292; /* Teal from Logo */
-  --color-brand-light: #ffffff; /* Clean white background */
-  --color-brand-surface: #f8fafc; /* Light gray surface */
+  --color-brand-red: #ff4d4d;
+  --color-brand-ocean: #0f172a;
+  --color-brand-accent: #0da292;
+  --color-brand-light: #ffffff;
+  --color-brand-surface: #f8fafc;
   
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Outfit", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Outfit", system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
@@ -18,28 +18,66 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
-    @apply bg-brand-ocean text-white font-sans antialiased selection:bg-brand-red selection:text-white;
+    @apply bg-brand-surface text-brand-ocean font-sans antialiased selection:bg-brand-accent/20 selection:text-brand-ocean;
     overflow-x: hidden;
     line-height: 1.6;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.011em;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+  /* Typography Scale — tighter headings, relaxed body */
+  h1 {
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-weight: 900;
+  }
+
+  h2 {
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    font-weight: 900;
+  }
+
+  h3 {
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-weight: 700;
+  }
+
+  h4, h5, h6 {
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    font-weight: 700;
   }
 
   p {
-    line-height: 1.65;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  /* Strong has slightly heavier weight for emphasis */
+  strong, b {
+    font-weight: 700;
   }
 
   img {
     max-width: 100%;
     height: auto;
     display: block;
+  }
+
+  /* Smoother focus outlines */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-accent);
+    outline-offset: 2px;
+  }
+
+  /* Better link defaults */
+  a {
+    text-decoration-skip-ink: auto;
   }
 }
 
@@ -66,4 +104,16 @@
     slideInLeft 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards,
     float 4s ease-in-out 1s infinite;
   will-change: transform, opacity;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-model {
+    animation: none;
+    opacity: 1;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

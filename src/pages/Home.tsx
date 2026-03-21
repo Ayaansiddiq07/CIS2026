@@ -229,13 +229,13 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12 items-center">
             {/* Organiser Logo */}
-            <div className="flex justify-center lg:justify-start">
+            <div className="flex justify-center">
               <img
                 src="/organiser.avif"
                 alt="BuildUp Kasaragod"
-                className="w-[140px] h-[140px] md:w-[180px] md:h-[180px] object-cover rounded-2xl border-2 border-slate-200 shadow-sm"
+                className="w-[140px] h-[140px] md:w-[180px] md:h-[180px] object-cover rounded-full border-2 border-slate-200 shadow-sm"
                 width={180}
                 height={180}
                 loading="lazy"
