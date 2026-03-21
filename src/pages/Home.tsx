@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MapPin, ArrowRight, Gamepad2, MessageSquare, Rocket, Store } from 'lucide-react';
@@ -5,8 +6,22 @@ import CountdownTimer from '../components/CountdownTimer';
 import StatsCounter from '../components/StatsCounter';
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <>
+      {/* Inject float keyframe directly — immune to Tailwind purging */}
+      <style>{`
+        @keyframes heroFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+      `}</style>
+
       {/* Event Schema Structured Data (JSON-LD for SEO) */}
       <script
         type="application/ld+json"
@@ -49,17 +64,23 @@ export default function Home() {
         <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 pt-24 md:pt-32 pb-8 md:pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
-            {/* Left: 3D Model Image (like Kerala Startup Fest) */}
-            <div className="flex items-center justify-center order-2 lg:order-1">
+            {/* Left: 3D Model Image */}
+            <motion.div
+              initial={{ opacity: 0, x: -80, scale: 0.92 }}
+              animate={mounted ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -80, scale: 0.92 }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="flex items-center justify-center order-2 lg:order-1"
+            >
               <img
                 src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
                 alt="Coastal Innovation Summit 3D Model"
-                className="w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] h-auto animate-hero-model"
+                className="w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] h-auto"
+                style={mounted ? { animation: 'heroFloat 4s ease-in-out 1s infinite' } : undefined}
                 loading="eager"
                 decoding="async"
                 fetchPriority="high"
               />
-            </div>
+            </motion.div>
 
             {/* Right: Text Content */}
             <motion.div
