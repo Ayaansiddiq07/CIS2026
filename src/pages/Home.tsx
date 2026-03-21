@@ -6,40 +6,34 @@ import CountdownTimer from '../components/CountdownTimer';
 import StatsCounter from '../components/StatsCounter';
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
+  const [slideIn, setSlideIn] = useState(false);
+  const [float, setFloat] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 80);
-    return () => clearTimeout(t);
+    const t1 = setTimeout(() => setSlideIn(true), 50);
+    const t2 = setTimeout(() => setFloat(true), 1200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
   return (
     <>
-      {/* Two separate animations on ONE element — entrance plays once, float loops */}
       <style>{`
-        @keyframes heroEntrance {
-          from {
-            opacity: 0;
-            transform: translate3d(-50px, 0, 0) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
-          }
-        }
-        @keyframes heroFloat {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          50%      { transform: translate3d(0, -8px, 0) scale(1); }
-        }
-        .hero-3d {
+        .hero-img {
           opacity: 0;
+          transform: translateX(-50px);
+          transition: opacity 0.9s ease-out, transform 0.9s ease-out;
         }
-        .hero-3d.active {
-          animation:
-            heroEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) both,
-            heroFloat 4s ease-in-out 1s infinite both;
-          will-change: transform;
-          backface-visibility: hidden;
+        .hero-img.slide-in {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        .hero-img.floating {
+          transition: none;
+          animation: heroBob 3.5s ease-in-out infinite;
+        }
+        @keyframes heroBob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
         }
       `}</style>
 
@@ -85,12 +79,12 @@ export default function Home() {
         <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 pt-24 md:pt-32 pb-8 md:pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
-            {/* Left: 3D Model Image — single element animation, no nested transforms */}
+            {/* Left: 3D Model — simple class toggle: slide-in → float */}
             <div className="flex items-center justify-center order-2 lg:order-1">
               <img
                 src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
                 alt="Coastal Innovation Summit 3D Model"
-                className={`w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] h-auto hero-3d ${mounted ? 'active' : ''}`}
+                className={`w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] h-auto hero-img${slideIn ? ' slide-in' : ''}${float ? ' floating' : ''}`}
                 loading="eager"
                 decoding="async"
                 fetchPriority="high"
