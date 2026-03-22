@@ -10,6 +10,7 @@ const Partners = lazy(() => import('./pages/Partners.tsx'));
 const Contact = lazy(() => import('./pages/Contact.tsx'));
 const Register = lazy(() => import('./pages/Register.tsx'));
 const FAQ = lazy(() => import('./pages/FAQ.tsx'));
+const NotFound = lazy(() => import('./pages/NotFound.tsx'));
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/register" element={<Register />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </Layout>
