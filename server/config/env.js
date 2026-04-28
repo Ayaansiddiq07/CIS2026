@@ -58,6 +58,14 @@ const envSchema = z.object({
     .email(),
   BREVO_SENDER_NAME: z.string().default("Coastal Innovation Summit"),
 
+  // Admin
+  ADMIN_EMAIL: z
+    .string({ required_error: "ADMIN_EMAIL is required" })
+    .email("ADMIN_EMAIL must be a valid email"),
+  ADMIN_PASSWORD: z
+    .string({ required_error: "ADMIN_PASSWORD is required" })
+    .min(8, "ADMIN_PASSWORD must be at least 8 characters"),
+
   // Frontend
   FRONTEND_URL: z
     .string({ required_error: "FRONTEND_URL is required" })

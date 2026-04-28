@@ -1,46 +1,73 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Mic, Calendar, Podcast, Users } from 'lucide-react';
+
+const bankyEase = [0.16, 1, 0.3, 1] as const;
+const staggerC = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+const staggerI = { hidden: { opacity: 0, y: 40, filter: 'blur(4px)' }, visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: bankyEase } } };
+
+interface Speaker { _id: string; name: string; organization?: string; bio: string; topic: string; }
 
 export default function Speakers() {
+  const [speakers, setSpeakers] = useState<Speaker[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { (async () => { try { const r = await fetch('/api/content/speakers'); if (r.ok) setSpeakers(await r.json()); } catch {} setLoading(false); })(); }, []);
+
   return (
-    <div className="min-h-screen bg-brand-surface pt-24 md:pt-32 pb-16 md:pb-24">
-      <div className="max-w-5xl mx-auto px-6 lg:px-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-3xl md:text-5xl font-display font-black text-brand-ocean tracking-tight uppercase">
-            Featured <span className="text-brand-accent">Speakers</span>
-          </h1>
-          <p className="text-slate-600 mt-4 text-[15px] md:text-base max-w-2xl mx-auto font-medium">
-            Experienced founders and professionals sharing practical realities, failures, and scaling constraints.
+    <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+      <div className="max-w-4xl mx-auto px-5 lg:px-8">
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }} className="mb-14">
+          <p className="text-purple-600 text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+            <span className="w-8 h-px bg-purple-600 inline-block" />Lineup
           </p>
+          <h1 className="text-3xl md:text-[44px] font-display font-bold text-banky-dark mb-4 leading-tight">Featured Speakers</h1>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
+            className="text-banky-dark/50 text-[16px] max-w-2xl">Experienced founders sharing practical realities, failures, and scaling constraints.</motion.p>
         </motion.div>
 
-        <div className="bg-white border-2 border-slate-200 p-8 md:p-12 text-center">
-          <div className="text-brand-accent font-display font-black text-6xl md:text-8xl opacity-20 mb-4">TBA</div>
-          <h2 className="text-xl md:text-2xl font-display font-bold text-slate-900 mb-3">
-            Speaker Lineup Coming Soon
-          </h2>
-          <p className="text-[15px] text-slate-600 font-medium max-w-lg mx-auto leading-relaxed">
-            Our speaker lineup is being finalized. We are curating industry practitioners, regional founders, and domain experts who have built and scaled ventures from Tier-2 and Tier-3 regions.
-          </p>
-          <div className="mt-8 border-t border-slate-200 pt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="border border-slate-200 p-4">
-              <span className="text-brand-red font-display font-black text-2xl block mb-1">7+</span>
-              <span className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Sessions Planned</span>
+        {loading ? (
+          <div className="flex justify-center py-16"><div className="w-7 h-7 border-2 border-banky-border border-t-banky-blue rounded-full animate-spin" /></div>
+        ) : speakers.length > 0 ? (
+          <motion.div variants={staggerC} initial="hidden" animate="visible" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {speakers.map((s) => (
+              <motion.div key={s._id} variants={staggerI} className="card-hover p-6 banky-card group">
+                <div className="w-12 h-12 bg-banky-blue/[0.08] border border-banky-blue/15 rounded-xl flex items-center justify-center mb-4 transition-transform duration-500 group-hover:scale-110">
+                  <span className="text-banky-blue font-display font-bold text-[16px]">{s.name.charAt(0)}</span>
+                </div>
+                <h3 className="text-[16px] font-semibold text-banky-dark mb-0.5 group-hover:text-banky-blue transition-colors duration-300">{s.name}</h3>
+                {s.organization && <p className="text-[12px] text-banky-dark/40 mb-2">{s.organization}</p>}
+                <p className="text-[13px] text-banky-blue font-medium mb-2">{s.topic}</p>
+                <p className="text-[13px] text-banky-dark/50 leading-relaxed line-clamp-3">{s.bio}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease: bankyEase }} className="text-center py-12">
+            <div className="w-16 h-16 rounded-2xl bg-white/50 border border-banky-border/30 flex items-center justify-center mx-auto mb-5">
+              <Mic className="w-7 h-7 text-banky-blue" />
             </div>
-            <div className="border border-slate-200 p-4">
-              <span className="text-brand-accent font-display font-black text-2xl block mb-1">8</span>
-              <span className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Speakers Expected</span>
+            <h2 className="text-xl font-display font-bold text-banky-dark mb-3">Speaker lineup coming soon</h2>
+            <p className="text-[15px] text-banky-dark/50 max-w-md mx-auto mb-10">We are curating industry practitioners and regional founders.</p>
+            <div className="flex justify-center gap-14">
+              {[
+                { val: '7+', label: 'Sessions', icon: Calendar },
+                { val: '8', label: 'Speakers', icon: Users },
+                { val: '1', label: 'Podcast', icon: Podcast },
+              ].map((stat, i) => (
+                <motion.div key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1, duration: 0.6, ease: bankyEase }}
+                  className="text-center"
+                >
+                  <span className="font-display font-bold text-2xl text-gradient block">{stat.val}</span>
+                  <span className="text-[12px] text-banky-dark/40 uppercase tracking-[0.15em]">{stat.label}</span>
+                </motion.div>
+              ))}
             </div>
-            <div className="border border-slate-200 p-4">
-              <span className="text-brand-ocean font-display font-black text-2xl block mb-1">1</span>
-              <span className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Live Podcast</span>
-            </div>
-          </div>
-        </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );

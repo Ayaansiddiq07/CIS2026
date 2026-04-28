@@ -1,52 +1,44 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
+
+const bankyEase = [0.16, 1, 0.3, 1] as const;
 
 export default function NotFound() {
   return (
-    <section
-      id="not-found-page"
-      style={{
-        minHeight: '60vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        padding: '2rem',
-        gap: '1.5rem',
-      }}
-    >
-      <h1
-        style={{
-          fontSize: 'clamp(4rem, 10vw, 8rem)',
-          fontWeight: 900,
-          lineHeight: 1,
-          background: 'linear-gradient(135deg, var(--brand-accent, #38bdf8), var(--brand-primary, #6366f1))',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}
+    <div className="min-h-screen bg-banky-yellow flex items-center justify-center relative overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: bankyEase }}
+        className="text-center px-5 relative z-10"
       >
-        404
-      </h1>
-      <p style={{ fontSize: '1.25rem', opacity: 0.7, maxWidth: '30ch' }}>
-        The page you're looking for doesn't exist or has been moved.
-      </p>
-      <Link
-        to="/"
-        style={{
-          display: 'inline-block',
-          padding: '0.75rem 2rem',
-          borderRadius: '0.5rem',
-          background: 'linear-gradient(135deg, var(--brand-accent, #38bdf8), var(--brand-primary, #6366f1))',
-          color: '#fff',
-          fontWeight: 600,
-          textDecoration: 'none',
-          transition: 'opacity 0.2s',
-        }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-      >
-        Go Home
-      </Link>
-    </section>
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 1, ease: bankyEase }}
+          className="text-[120px] md:text-[160px] font-display font-black text-banky-blue leading-none mb-4"
+        >
+          404
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6, ease: bankyEase }}
+          className="text-banky-dark/60 text-[17px] mb-8 max-w-md mx-auto"
+        >
+          The page you're looking for doesn't exist or has been moved.
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6, ease: bankyEase }}
+        >
+          <Link to="/" className="btn-primary inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-[15px] rounded-full">
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </Link>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 }

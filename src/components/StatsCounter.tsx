@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { useInView, animate } from 'framer-motion';
+import { useInView, animate, motion } from 'framer-motion';
+
+const bankyEase = [0.16, 1, 0.3, 1] as const;
 
 const stats = [
   { label: 'Expected Attendees', value: 300, suffix: '+' },
@@ -10,47 +12,57 @@ const stats = [
 
 export function Counter({ from, to, suffix }: { from: number; to: number; suffix: string }) {
   const nodeRef = useRef<HTMLSpanElement>(null);
-  const inView = useInView(nodeRef, { once: true, margin: "-50px" }); // Keep useInView for triggering
+  const inView = useInView(nodeRef, { once: true, margin: "-50px" });
 
-  // New animation logic using 'animate'
   useEffect(() => {
-    if (!inView) return; // Only animate when in view
-
+    if (!inView) return;
     const node = nodeRef.current;
     if (!node) return;
-
     const controls = animate(from, to, {
-      duration: 2,
+      duration: 2.5,
       ease: "easeOut",
       onUpdate(value: number) {
-        node.textContent = Intl.NumberFormat('en-US').format(Math.round(value)) + suffix; // Use Intl.NumberFormat for formatting
+        node.textContent = Intl.NumberFormat('en-US').format(Math.round(value)) + suffix;
       },
     });
-
     return () => controls.stop();
-  }, [from, to, suffix, inView]); // Added inView to dependencies
+  }, [from, to, suffix, inView]);
 
-  return <span ref={nodeRef} className="text-4xl lg:text-5xl font-display font-black text-brand-ocean" />;
+  return <span ref={nodeRef} className="text-4xl lg:text-[56px] font-display font-bold text-banky-blue counter-glow" />;
 }
 
 export default function StatsCounter() {
   return (
-    <div className="w-full bg-brand-surface border-y border-slate-200 py-12 md:py-16">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+    <div className="w-full py-24 md:py-28 relative overflow-hidden">
+      {/* Top/bottom lines */}
+      <div className="section-line w-full mb-12" />
+      <div className="max-w-6xl mx-auto px-5 lg:px-8 relative z-10">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+          }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-16"
+        >
           {stats.map((stat, i) => (
-            <div
+            <motion.div
               key={i}
-              className="flex flex-col gap-2 bg-white px-6 py-5 md:px-8 md:py-6 border border-slate-200 hover:border-brand-accent/50 hover:shadow-lg transition-all"
+              variants={{
+                hidden: { opacity: 0, y: 40 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: bankyEase } }
+              }}
+              className="text-center lg:text-left"
             >
               <Counter from={0} to={stat.value} suffix={stat.suffix} />
-              <span className="text-[9px] md:text-[10px] text-brand-red font-bold uppercase tracking-[0.2em] mt-2">
-                {stat.label}
-              </span>
-            </div>
+              <span className="text-[13px] text-banky-dark/40 block mt-3 uppercase tracking-[0.15em]">{stat.label}</span>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
+      <div className="section-line w-full mt-12" />
     </div>
   );
 }

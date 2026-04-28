@@ -14,6 +14,15 @@ function errorHandler(err, req, res, _next) {
     method: req.method,
   });
 
+  // Zod validation error
+  if (err.name === "ZodError" && Array.isArray(err.issues)) {
+    const errors = err.issues.map((issue) => ({
+      field: issue.path.join("."),
+      message: issue.message,
+    }));
+    return res.status(400).json({ error: "Validation failed", details: errors });
+  }
+
   // Mongoose validation error
   if (err.name === "ValidationError") {
     const errors = Object.values(err.errors).map((e) => ({
@@ -26,9 +35,16 @@ function errorHandler(err, req, res, _next) {
   // Mongoose duplicate key
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || "field";
+    const friendlyFields = {
+      email: "email address",
+      phone: "phone number",
+      razorpay_payment_id: "payment",
+      razorpay_order_id: "order",
+    };
+    const label = friendlyFields[field] || field;
     return res
       .status(409)
-      .json({ error: `Duplicate value for ${field}` });
+      .json({ error: `A record with this ${label} already exists.` });
   }
 
   // JWT errors

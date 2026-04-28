@@ -1,0 +1,84 @@
+# ──────────────────────────────────────────────────────────
+# CD — Frontend Auto-Deploy to Cloudflare Pages
+# Triggers on push to main when frontend files change.
+# Uses Cloudflare's global edge network (300+ PoPs) for
+# sub-50ms TTFB worldwide — handles 1000+ concurrent users
+# with zero load on your VPS.
+#
+# Required GitHub Secrets:
+#   CLOUDFLARE_API_TOKEN      — API token with "Cloudflare Pages: Edit" permission
+#   CLOUDFLARE_ACCOUNT_ID     — Your Cloudflare account ID
+#
+# Required GitHub Variable:
+#   CLOUDFLARE_PROJECT_NAME   — Name of your Cloudflare Pages project
+# ──────────────────────────────────────────────────────────
+
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'tsconfig*.json'
+      - '.github/workflows/deploy-frontend.yml'
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: true   # cancel stale frontend deploys (safe — static files)
+
+jobs:
+  # ── Wait for CI to pass first ───────────────────────────
+  ci:
+    name: Run CI
+    uses: ./.github/workflows/ci.yml
+
+  # ── Build & Deploy to Cloudflare Pages ──────────────────
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npx vite build
+        env:
+          NODE_ENV: production
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME }}
+
+      - name: Deployment summary
+        run: |
+          echo "## ✅ Frontend Deployed to Cloudflare Pages" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Project:** ${{ vars.CLOUDFLARE_PROJECT_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** main" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

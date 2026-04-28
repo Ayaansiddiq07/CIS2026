@@ -1,297 +1,393 @@
-import { lazy, Suspense } from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MapPin, ArrowRight, Gamepad2, MessageSquare, Rocket, Store } from 'lucide-react';
+import { ArrowRight, CalendarDays, Gamepad2, MessageSquare, Rocket, Store, Sparkles } from 'lucide-react';
 import CountdownTimer from '../components/CountdownTimer';
 import StatsCounter from '../components/StatsCounter';
+import BankyTextReveal from '../components/BankyTextReveal';
 
-const HeroModel3D = lazy(() => import('../components/HeroModel3D'));
+
+/* ── Banky-style animation variants ── */
+const bankyEase = [0.16, 1, 0.3, 1] as const;
+
+/* Scroll-triggered reveal with parallax depth */
+function RevealSection({ children, className = '', direction = 'up' }: { children: React.ReactNode; className?: string; direction?: 'up' | 'left' | 'right' | 'scale' }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-100px' });
+  const variants = {
+    up: { hidden: { opacity: 0, y: 70 }, visible: { opacity: 1, y: 0 } },
+    left: { hidden: { opacity: 0, x: -70 }, visible: { opacity: 1, x: 0 } },
+    right: { hidden: { opacity: 0, x: 70 }, visible: { opacity: 1, x: 0 } },
+    scale: { hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } },
+  };
+  return (
+    <motion.div
+      ref={ref}
+      initial={variants[direction].hidden}
+      animate={inView ? variants[direction].visible : {}}
+      transition={{ duration: 0.9, ease: bankyEase }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* Stagger children animation */
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.15 }
+  }
+};
+
+const staggerChild = {
+  hidden: { opacity: 0, y: 40, filter: 'blur(4px)' },
+  visible: {
+    opacity: 1, y: 0, filter: 'blur(0px)',
+    transition: { duration: 0.7, ease: bankyEase }
+  }
+};
+
+/* Horizontal marquee component (Banky-style) */
+function Marquee({ items }: { items: string[] }) {
+  return (
+    <div className="overflow-hidden py-6 border-y border-banky-border/40">
+      <div className="animate-marquee whitespace-nowrap flex gap-12">
+        {[...items, ...items].map((item, i) => (
+          <span key={i} className="text-banky-dark/25 text-[14px] font-bold uppercase tracking-[0.2em] flex items-center gap-4">
+            {item}
+            <span className="w-1.5 h-1.5 rounded-full bg-banky-blue/30" />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
+  /* Parallax hero — GPU-optimized (transform + opacity only) */
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+  const heroY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 50]), { stiffness: 100, damping: 30, mass: 1 });
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
   return (
     <>
-      {/* Event Schema Structured Data (JSON-LD for SEO) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Event',
+            '@context': 'https://schema.org', '@type': 'Event',
             name: 'Coastal Innovation Summit 2026',
-            startDate: '2026-05-10T08:00:00+05:30',
-            endDate: '2026-05-10T17:30:00+05:30',
             eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
             eventStatus: 'https://schema.org/EventScheduled',
-            location: {
-              '@type': 'Place',
-              name: 'Govinda Pai Smarakam Bhavanika Auditorium',
-              address: {
-                '@type': 'PostalAddress',
-                addressLocality: 'Manjeshwar',
-                addressRegion: 'Kasaragod, Kerala',
-                addressCountry: 'IN',
-              },
-            },
-            organizer: {
-              '@type': 'Organization',
-              name: 'BuildUp Kasaragod',
-              url: 'https://www.buildupkasaragod.org',
-            },
-            description: 'A structured, beginner-friendly, zero-fluff startup learning experience for first-time learners and early-stage founders from the North Malabar region.',
-            offers: [
-              { '@type': 'Offer', name: 'Gold Delegate', price: '499', priceCurrency: 'INR', availability: 'https://schema.org/InStock' },
-              { '@type': 'Offer', name: 'Diamond VIP', price: '1499', priceCurrency: 'INR', availability: 'https://schema.org/InStock' },
-            ],
+            location: { '@type': 'Place', name: 'To Be Announced', address: { '@type': 'PostalAddress', addressLocality: 'Kasaragod', addressRegion: 'Kerala', addressCountry: 'IN' } },
+            organizer: { '@type': 'Organization', name: 'BuildUp Kasaragod', url: 'https://www.buildupkasaragod.org' },
+            description: 'A structured, beginner-friendly startup learning experience for the North Malabar region.',
           }),
         }}
       />
-    <div className="relative min-h-screen bg-brand-surface selection:bg-brand-accent/20">
-      
-      {/* 1. Hero Section */}
-      <section className="relative w-full flex flex-col justify-center overflow-hidden bg-brand-surface border-b border-slate-200 min-h-0 lg:min-h-[90vh]">
-        <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 pt-24 md:pt-32 pb-8 md:pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            
-            {/* Left: 3D Model via Three.js — float animation in WebGL, zero CSS conflict */}
-            <motion.div 
-              variants={{ hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } } }}
-              initial="hidden"
-              animate="visible"
-              className="flex items-center justify-center order-2 lg:order-1 hero-wrapper"
+
+    <div className="min-h-screen bg-banky-yellow">
+
+      {/* ━━━ HERO ━━━ */}
+      <section ref={heroRef} className="relative w-full min-h-[100vh] flex items-center overflow-hidden">
+        {/* Banky decorative swoosh line */}
+        <svg className="absolute top-20 right-0 w-[45vw] h-auto opacity-40 md:opacity-60 pointer-events-none" viewBox="0 0 500 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <motion.path
+            d="M500 0 L500 300 Q500 350 450 350 L100 350 Q50 350 50 400 L50 600"
+            stroke="white"
+            strokeWidth="60"
+            strokeLinecap="round"
+            fill="none"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 2, ease: bankyEase, delay: 0.5 }}
+          />
+        </svg>
+
+        <motion.div
+          style={{ y: heroY, opacity: heroOpacity }}
+          className="w-full max-w-6xl mx-auto px-5 lg:px-8 pt-28 pb-20 relative z-10"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+            {/* Left: Illustration */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: bankyEase, delay: 0.25 }}
+              className="flex items-center justify-center order-2 lg:order-1"
             >
-              <div className="w-[180px] sm:w-[260px] lg:w-[360px] xl:w-[420px] aspect-square">
-                <Suspense fallback={
-                  <img
-                    src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
-                    alt="Coastal Innovation Summit 3D Model"
-                    className="w-full h-full object-contain"
-                    width={420}
-                    height={420}
-                  />
-                }>
-                  <HeroModel3D />
-                </Suspense>
+              <div className="relative w-[220px] sm:w-[300px] lg:w-[400px] xl:w-[440px] aspect-square">
+                <img
+                  src="/0c0468f7-d6eb-4bc0-acff-4ade9507ab1d-removebg-preview.png"
+                  alt="Coastal Innovation Summit"
+                  className="w-full h-full object-contain"
+                  width={440}
+                  height={440}
+                  loading="eager"
+                  decoding="async"
+                />
               </div>
             </motion.div>
 
-            {/* Right: Text Content */}
-            <motion.div
-              variants={{
-                hidden: { opacity: 0 },
-                visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } }
-              }}
-              initial="hidden"
-              animate="visible"
-              className="text-center lg:text-left order-1 lg:order-2"
-            >
-              <motion.div 
-                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }}
-                className="inline-flex items-center justify-center lg:justify-start gap-2 py-1.5 px-3 md:px-4 bg-transparent border border-slate-300 text-[10px] md:text-xs font-bold text-slate-700 tracking-[0.2em] uppercase mb-6 md:mb-8 max-w-full"
+            {/* Right: Messaging */}
+            <div className="text-center lg:text-left order-1 lg:order-2">
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.1, duration: 0.6, ease: bankyEase }}
+                className="inline-flex items-center gap-2.5 px-4 py-2 bg-banky-blue/[0.08] text-banky-blue text-[12px] font-semibold tracking-[0.15em] uppercase rounded-full mb-7 border border-banky-blue/15"
               >
-                <MapPin className="w-3.5 h-3.5 text-brand-red" />
-                <span>FIRST OF ITS KIND IN THE REGION</span>
+                <span className="blue-dot" />
+                Kasaragod, Kerala · 2026
               </motion.div>
-              
-              <motion.h1 
-                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } } }}
-                className="text-[32px] sm:text-4xl md:text-5xl lg:text-7xl font-display font-black tracking-tight text-brand-ocean uppercase leading-[0.95] mb-4 md:mb-7"
+
+              {/* Headline — Banky massive uppercase reveal */}
+              <h1 className="hero-headline font-display mb-5">
+                <div className="text-banky-blue">
+                  <BankyTextReveal text="Coastal" delay={0.15} by="char" />
+                </div>
+                <div className="text-banky-dark">
+                  <BankyTextReveal text="Innovation" delay={0.35} by="char" />
+                </div>
+                <div className="text-banky-blue">
+                  <BankyTextReveal text="Summit" delay={0.55} by="char" />
+                </div>
+              </h1>
+
+              {/* Chapter subtitle — banky.io style */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65, duration: 0.6, ease: bankyEase }}
+                className="mb-7"
               >
-                COASTAL<br />
-                INNOVATION<br />
-                <span className="text-brand-accent">SUMMIT</span>
-                <span className="text-brand-red">'26</span>
-              </motion.h1>
-              
-              <motion.div 
-                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }}
-                className="mb-6"
-              >
-                <p className="text-lg md:text-xl font-display font-bold text-brand-ocean tracking-wide">2026 MAY 10</p>
-                <p className="text-sm md:text-base font-bold text-slate-500 uppercase tracking-[0.15em]">GOVINDA PAI SMARAKAM, MANJESHWAR</p>
+                <p className="text-banky-dark/50 text-[14px] font-medium tracking-[0.05em]">
+                  Chapter 1 | Manjeshwar
+                </p>
+                <div className="w-10 h-[2px] bg-banky-blue/40 mt-2 mx-auto lg:mx-0" />
               </motion.div>
-            
-              <motion.div 
-                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }}
+
+              {/* Subtitle — slides in */}
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.8, ease: bankyEase }}
+                className="text-[17px] md:text-[18px] text-banky-dark/60 leading-relaxed mb-9 max-w-md mx-auto lg:mx-0"
+              >
+                A beginner-friendly, zero-fluff startup learning experience for first-time learners and early-stage founders from North Malabar.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.8, ease: bankyEase }}
                 className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
               >
-                <Link 
-                  to="/register"
-                  className="bg-brand-ocean text-white px-7 py-3.5 font-bold uppercase tracking-wider text-sm hover:bg-brand-red transition-colors border-2 border-brand-ocean flex items-center justify-center gap-3"
+                <Link to="/register"
+                  className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-4 font-semibold text-[15px] rounded-full"
                 >
-                  <span>Register Now</span>
-                  <ArrowRight className="w-4 h-4"/>
+                  Register Now <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link 
-                  to="/sessions"
-                  className="bg-transparent text-brand-ocean px-7 py-3.5 font-bold uppercase tracking-wider text-sm hover:bg-slate-100 transition-colors border-2 border-slate-300 text-center"
+                <Link to="/sessions"
+                  className="btn-outline inline-flex items-center justify-center gap-2 px-8 py-4 font-medium text-[15px] rounded-full"
                 >
-                  Session Schedule
+                  View Schedule <CalendarDays className="w-4 h-4" />
                 </Link>
               </motion.div>
-            </motion.div>
+            </div>
           </div>
-        </div>
-
-        {/* Countdown below the grid */}
-        <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 pb-10">
-          <CountdownTimer />
-        </div>
+        </motion.div>
       </section>
 
-      {/* 2. Executive Summary / About Section */}
-      <section className="py-20 bg-brand-surface">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl lg:text-4xl font-display font-black text-brand-ocean uppercase mb-4 leading-tight">Bridging Heritage <br/><span className="text-brand-accent">With Hyper-Tech</span></h2>
-              <div className="w-16 h-1.5 bg-brand-red mb-6"></div>
-              <div className="prose prose-base text-slate-600 font-medium space-y-5">
+      {/* ━━━ MARQUEE ━━━ */}
+      <Marquee items={['Innovation', 'Entrepreneurship', 'North Malabar', 'Startups', 'Kasaragod', 'Technology', 'Community', 'Growth']} />
+
+      {/* ━━━ INFO BAR ━━━ */}
+      <CountdownTimer />
+
+      {/* ━━━ ABOUT SECTION ━━━ */}
+      <section className="py-28 md:py-36">
+        <div className="max-w-6xl mx-auto px-5 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
+            {/* Left */}
+            <RevealSection className="lg:col-span-3" direction="left">
+              <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-5 flex items-center gap-2">
+                <span className="w-8 h-px bg-banky-blue inline-block" />
+                About the Summit
+              </p>
+              <h2 className="text-3xl lg:text-[44px] font-display font-bold text-banky-dark mb-7 leading-tight">
+                The startup event that<br />Kasaragod deserves.
+              </h2>
+              <div className="text-[16px] text-banky-dark/60 space-y-4 mb-8">
                 <p>
-                  The Coastal Innovation Summit is well-structured, credible, and purpose-built. It is not positioned to compete in scale with flagship startup festivals. Instead, it fills a critical gap by serving Tier-2 and Tier-3 regions with a structured, beginner-friendly, zero-fluff startup learning experience.
+                  The Coastal Innovation Summit fills a critical gap — bringing structured, practical startup education to Tier-2 and Tier-3 regions where it's needed most.
                 </p>
                 <p>
-                  Taking place at the historic <strong>Govinda Pai Smarakam Bhavanika Auditorium</strong> in Manjeshwar, Kasaragod, this conclave is designed to align the region's rich intellectual heritage with long-term tech ecosystem building.
+                  No fluff. No vague motivation. Just real sessions from real founders on real problems — from legal mistakes to scaling challenges.
                 </p>
-                <p className="font-bold text-slate-800 border-l-4 border-brand-accent pl-4 text-sm">
+              </div>
+              <div className="banky-card p-5 border-l-2 border-l-banky-blue">
+                <p className="text-[15px] text-banky-dark/60 italic">
                   "Designed to support active learning, encourage collaboration, and showcase regional inclusiveness."
                 </p>
               </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 lg:mt-0">
-              <div className="bg-slate-50 p-6 border border-slate-200">
-                <span className="text-brand-accent font-display font-black text-3xl mb-3 block">01</span>
-                <h3 className="text-lg font-bold text-slate-900 mb-2 uppercase tracking-wide">First-time Learners</h3>
-                <p className="text-slate-600 font-medium text-sm leading-relaxed">Accessible entry points into the startup ecosystem for students and absolute beginners.</p>
-              </div>
-              <div className="bg-slate-50 p-6 border border-slate-200">
-                <span className="text-brand-accent font-display font-black text-3xl mb-3 block">02</span>
-                <h3 className="text-lg font-bold text-slate-900 mb-2 uppercase tracking-wide">Early-stage Founders</h3>
-                <p className="text-slate-600 font-medium text-sm leading-relaxed">Practical guidance for navigating early execution challenges and avoiding fatal mistakes.</p>
-              </div>
-              <div className="bg-slate-50 p-6 border border-slate-200 sm:col-span-2">
-                <span className="text-brand-red font-display font-black text-3xl mb-3 block">03</span>
-                <h3 className="text-lg font-bold text-slate-900 mb-2 uppercase tracking-wide">Experienced Pros</h3>
-                <p className="text-slate-600 font-medium text-sm leading-relaxed">High-value networking, critical ecosystem building, and deep-dive strategy sessions designed to scale regional impacts.</p>
-              </div>
-            </div>
+            </RevealSection>
+
+            {/* Right — Who it's for */}
+            <RevealSection className="lg:col-span-2" direction="right">
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-80px' }}
+                className="space-y-3"
+              >
+                {[
+                  { num: '❶', title: 'First-time Learners', desc: 'Students and beginners getting their first real exposure to startups.' },
+                  { num: '❷', title: 'Early-stage Founders', desc: 'Founders navigating execution, legal, and funding challenges.' },
+                  { num: '❸', title: 'Experienced Professionals', desc: 'People looking to connect, mentor, or invest in the region.' },
+                  { num: '❹', title: 'Regional Ecosystem', desc: 'Proving that innovation doesn\'t need a metro city.' },
+                ].map((item) => (
+                  <motion.div key={item.num} variants={staggerChild}
+                    className="card-hover flex gap-4 p-4 banky-card group"
+                  >
+                    <span className="step-number text-[16px] shrink-0">{item.num}</span>
+                    <div>
+                      <h3 className="text-[15px] font-semibold text-banky-dark mb-0.5 group-hover:text-banky-blue transition-colors duration-300">{item.title}</h3>
+                      <p className="text-banky-dark/50 text-[13px] leading-relaxed">{item.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </RevealSection>
           </div>
         </div>
       </section>
 
-      {/* 3. Stats Area */}
+      {/* ━━━ STATS ━━━ */}
       <StatsCounter />
 
-      {/* 4. Activity Zones Section */}
-      <section className="py-16 md:py-20 bg-white border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-slate-200">
-            <h2 className="text-2xl md:text-4xl font-display font-black uppercase text-brand-ocean leading-tight">Dynamic <br className="hidden md:block"/><span className="text-brand-accent">Activity Zones</span></h2>
-            <p className="text-[15px] text-slate-600 font-medium max-w-lg">While the main stage hosts zero-fluff talks, our parallel activity zones focus on interaction, learning by doing, and open networking. Operating side-by-side to ensure continuous engagement.</p>
-          </div>
+      {/* ━━━ ACTIVITY ZONES ━━━ */}
+      <section className="py-28 md:py-36">
+        <div className="max-w-6xl mx-auto px-5 lg:px-8">
+          <RevealSection className="max-w-xl mb-16">
+            <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-5 flex items-center gap-2">
+              <span className="w-8 h-px bg-banky-blue inline-block" />
+              Beyond the main stage
+            </p>
+            <h2 className="text-3xl lg:text-[44px] font-display font-bold text-banky-dark mb-5 leading-tight">
+              Activity Zones
+            </h2>
+            <p className="text-[16px] text-banky-dark/60">Four parallel tracks running alongside sessions. Pick what excites you.</p>
+          </RevealSection>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-px lg:bg-slate-200 border border-slate-200">
-            <div className="bg-white p-6 sm:p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-accent group">
-              <div className="w-12 h-12 bg-slate-100 flex items-center justify-center mb-5 transition-colors group-hover:bg-brand-accent">
-                <Gamepad2 className="w-5 h-5 text-slate-700 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-base font-bold text-brand-ocean mb-2 uppercase tracking-wide">Startup Snake & Ladder</h3>
-              <p className="text-[13px] text-slate-600 font-medium leading-relaxed">A large-format interactive game covering ideation, funding, legal basics, and scaling. Answer business questions to climb!</p>
-            </div>
-            
-            <div className="bg-white p-6 sm:p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-red group">
-              <div className="w-12 h-12 bg-slate-100 flex items-center justify-center mb-5 transition-colors group-hover:bg-brand-red">
-                <MessageSquare className="w-5 h-5 text-slate-700 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-base font-bold text-brand-ocean mb-2 uppercase tracking-wide">Startup Debate</h3>
-              <p className="text-[13px] text-slate-600 font-medium leading-relaxed">Moderated sessions designed to encourage critical thinking and argumentation on the hardest topics in the startup ecosystem.</p>
-            </div>
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+          >
+            {[
+              { icon: Gamepad2, title: 'Startup Snake & Ladder', desc: 'Interactive game covering ideation, funding, legal basics, and scaling.', color: '#1B3FE4' },
+              { icon: MessageSquare, title: 'Startup Debate', desc: 'Critical thinking on the hardest topics in building startups.', color: '#f97316' },
+              { icon: Rocket, title: 'Startup Jam', desc: 'Rapid team-based ideation — form teams, build concepts, present.', color: '#a855f7' },
+              { icon: Store, title: 'Exhibition Stalls', desc: 'Heritage, Agri-Tech, tribal enterprise, and local food businesses.', color: '#059669' },
+            ].map((zone) => {
+              const Icon = zone.icon;
+              return (
+                <motion.div key={zone.title} variants={staggerChild}
+                  className="card-hover banky-card p-7 group relative overflow-hidden"
+                >
+                  {/* Subtle top glow bar */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: `linear-gradient(90deg, transparent, ${zone.color}, transparent)` }} />
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all duration-500 group-hover:scale-110"
+                    style={{ backgroundColor: `${zone.color}12`, color: zone.color }}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-[15px] font-semibold text-banky-dark mb-2 group-hover:text-banky-blue transition-colors duration-300">{zone.title}</h3>
+                  <p className="text-[13px] text-banky-dark/50 leading-relaxed">{zone.desc}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
 
-            <div className="bg-white p-6 sm:p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-accent group">
-              <div className="w-12 h-12 bg-slate-100 flex items-center justify-center mb-5 transition-colors group-hover:bg-brand-accent">
-                <Rocket className="w-5 h-5 text-slate-700 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-base font-bold text-brand-ocean mb-2 uppercase tracking-wide">Startup Jam</h3>
-              <p className="text-[13px] text-slate-600 font-medium leading-relaxed">A rapid team-based ideation activity. Form teams instantly, structure a startup concept, and present it before time runs out.</p>
-            </div>
-
-            <div className="bg-white p-6 sm:p-8 hover:bg-slate-50 transition-all border-b-4 border-transparent hover:border-brand-red group">
-              <div className="w-12 h-12 bg-slate-100 flex items-center justify-center mb-5 transition-colors group-hover:bg-brand-red">
-                <Store className="w-5 h-5 text-slate-700 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-base font-bold text-brand-ocean mb-2 uppercase tracking-wide">Exhibition Stalls</h3>
-              <p className="text-[13px] text-slate-600 font-medium leading-relaxed">Discover Tribal Enterprise, Kasaragod Heritage, Agri-Tech innovations, and Local Food businesses operating all day.</p>
-            </div>
-          </div>
-          
-          <div className="mt-12 text-center">
-            <Link 
-              to="/sessions"
-              className="inline-block px-8 py-4 bg-brand-ocean text-white font-bold uppercase tracking-wider text-sm hover:bg-brand-red transition-colors"
-            >
-              See the Full Schedule
+          <RevealSection className="mt-12">
+            <Link to="/sessions" className="inline-flex items-center gap-2 text-banky-blue text-[14px] font-semibold hover:gap-3.5 transition-all duration-500 group">
+              View full schedule
+              <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
             </Link>
-          </div>
+          </RevealSection>
         </div>
       </section>
-      {/* 5. Organiser Section */}
-      <section className="py-16 md:py-20 bg-brand-surface border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="mb-10 pb-6 border-b border-slate-200">
-            <h2 className="text-2xl md:text-4xl font-display font-black uppercase text-brand-ocean leading-tight">
-              Organized <span className="text-brand-accent">By</span>
+
+      {/* ━━━ CTA ━━━ */}
+      <section className="py-28 md:py-36 relative overflow-hidden bg-banky-dark text-white">
+        <div className="max-w-3xl mx-auto px-5 lg:px-8 text-center relative z-10">
+          <RevealSection direction="scale">
+            <div className="w-14 h-14 rounded-2xl bg-banky-blue/[0.12] border border-banky-blue/20 flex items-center justify-center mx-auto mb-7">
+              <Sparkles className="w-6 h-6 text-banky-blue-light" />
+            </div>
+            <h2 className="text-3xl md:text-[48px] font-display font-bold text-white mb-6 leading-tight">
+              <div><BankyTextReveal text="Ready to be part of" delay={0.1} by="word" scrollTriggered /></div>
+              <div><BankyTextReveal text="something meaningful?" delay={0.32} by="word" scrollTriggered /></div>
             </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12 items-center">
-            {/* Organiser Logo */}
-            <div className="flex justify-center">
-              <img
-                src="/organiser.avif"
-                alt="BuildUp Kasaragod"
-                className="w-[140px] h-[140px] md:w-[180px] md:h-[180px] object-cover rounded-full border-2 border-slate-200 shadow-sm"
-                width={180}
-                height={180}
-                loading="lazy"
-                decoding="async"
-              />
+            <p className="text-white/60 text-[17px] max-w-lg mx-auto mb-10">
+              Join 300+ attendees, 8 speakers, and 7 zero-fluff sessions at the first event of its kind in North Malabar.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link to="/register"
+                className="btn-primary inline-flex items-center justify-center gap-2 px-9 py-4 font-semibold text-[15px] rounded-full"
+              >
+                Register Now <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link to="/about"
+                className="inline-flex items-center justify-center text-white/70 px-9 py-4 font-medium text-[15px] rounded-full border border-white/20 hover:border-white/40 hover:text-white transition-all duration-500"
+              >
+                Learn More
+              </Link>
             </div>
+          </RevealSection>
+        </div>
+      </section>
 
-            {/* Organiser Info */}
-            <div>
-              <h3 className="text-2xl md:text-3xl font-display font-black text-brand-ocean uppercase tracking-tight mb-2">
-                BuildUp Kasaragod
-              </h3>
-              <p className="text-[10px] font-bold text-brand-red uppercase tracking-[0.25em] mb-5">
-                Non-Profit Organization · Kasaragod, Kerala
-              </p>
-
-              <div className="prose prose-base text-slate-600 font-medium space-y-4 mb-6">
-                <p>
-                  BuildUp Kasaragod is an NGO focused on fostering entrepreneurship and innovation in the Kasaragod district. Through structured programs, community events, and educational initiatives, the organization works to bridge the gap between grassroots talent and mainstream startup ecosystems.
-                </p>
-                <p>
-                  The Coastal Innovation Summit is their flagship initiative — designed to bring world-class startup learning experiences to Tier-2 and Tier-3 regions, proving that impactful ecosystem building doesn't require a metro city.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href="https://www.buildupkasaragod.org"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-block px-6 py-3 bg-brand-ocean text-white font-bold uppercase tracking-wider text-xs hover:bg-brand-red transition-colors"
-                >
-                  Visit Website
-                </a>
-                <a
-                  href="mailto:contact@buildupkasaragod.org"
-                  className="inline-block px-6 py-3 bg-transparent text-brand-ocean font-bold uppercase tracking-wider text-xs border-2 border-slate-300 hover:border-brand-accent hover:text-brand-accent transition-colors"
-                >
-                  Get in Touch
-                </a>
+      {/* ━━━ ORGANISER ━━━ */}
+      <section className="py-24 md:py-32">
+        <div className="max-w-6xl mx-auto px-5 lg:px-8">
+          <RevealSection>
+            <div className="banky-card p-8 md:p-12 relative overflow-hidden">
+              <div className="flex flex-col md:flex-row items-start gap-8">
+                <img src="/organiser.avif" alt="BuildUp Kasaragod" className="w-20 h-20 object-cover rounded-2xl shrink-0 ring-2 ring-banky-border" width={80} height={80} loading="lazy" decoding="async" />
+                <div>
+                  <p className="text-[12px] text-banky-dark/50 font-medium uppercase tracking-[0.2em] mb-1">Organized by</p>
+                  <h3 className="text-xl font-display font-bold text-banky-dark mb-1">BuildUp Kasaragod</h3>
+                  <p className="text-[13px] text-banky-dark/50 mb-4">Non-Profit Organization · Kasaragod, Kerala</p>
+                  <p className="text-[15px] text-banky-dark/60 mb-6 max-w-xl leading-relaxed">
+                    BuildUp Kasaragod is an NGO fostering entrepreneurship in the Kasaragod district. The Coastal Innovation Summit is their flagship initiative.
+                  </p>
+                  <div className="flex gap-3">
+                    <a href="https://www.buildupkasaragod.org" target="_blank" rel="noreferrer"
+                      className="btn-primary px-5 py-2.5 font-semibold text-[13px] rounded-full">
+                      Visit Website
+                    </a>
+                    <a href="mailto:contact@buildupkasaragod.org"
+                      className="btn-outline px-5 py-2.5 font-medium text-[13px] rounded-full">
+                      Get in Touch
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </RevealSection>
         </div>
       </section>
 

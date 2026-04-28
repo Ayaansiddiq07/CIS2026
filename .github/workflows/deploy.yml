@@ -1,0 +1,157 @@
+# ──────────────────────────────────────────────────────────
+# CD — Backend Auto-Deploy to VPS
+# Triggers on push to main AFTER CI passes.
+# Frontend is deployed by Cloudflare Pages (deploy-frontend.yml).
+#
+# Pipeline: CI → rsync server files → write .env → sync nginx
+#           → npm ci → PM2 reload → nginx reload → health check
+#
+# Required GitHub Secrets:
+#   VPS_HOST, VPS_USERNAME, VPS_SSH_KEY, VPS_DEPLOY_PATH
+#   PRODUCTION_ENV_FILE (full .env contents)
+# ──────────────────────────────────────────────────────────
+
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - '.github/workflows/deploy.yml'
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false   # never cancel in-flight deploys
+
+jobs:
+  # ── Wait for CI to pass first ───────────────────────────
+  ci:
+    name: Run CI
+    uses: ./.github/workflows/ci.yml
+
+  # ── Deploy backend to VPS ───────────────────────────────
+  deploy:
+    name: Deploy to VPS
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Sync server files to VPS via rsync ──
+      - name: Deploy server files
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete --exclude='node_modules' --exclude='.env' --exclude='logs/' --exclude='*.log'
+          path: server/
+          remote_path: ${{ secrets.VPS_DEPLOY_PATH }}/server/
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USERNAME }}
+          remote_key: ${{ secrets.VPS_SSH_KEY }}
+
+      # ── Write production .env securely ──
+      - name: Deploy environment file
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cat << 'ENVEOF' > ${{ secrets.VPS_DEPLOY_PATH }}/server/.env
+            ${{ secrets.PRODUCTION_ENV_FILE }}
+            ENVEOF
+            chmod 600 ${{ secrets.VPS_DEPLOY_PATH }}/server/.env
+
+      # ── Sync & reload Nginx config ──
+      - name: Update Nginx configuration
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+
+            NGINX_SRC="${{ secrets.VPS_DEPLOY_PATH }}/server/deploy/nginx.conf"
+            NGINX_DST="/etc/nginx/sites-available/cis-backend"
+
+            # Only update if the config file actually changed
+            if ! diff -q "$NGINX_SRC" "$NGINX_DST" > /dev/null 2>&1; then
+              echo "→ Nginx config changed — updating..."
+              sudo cp "$NGINX_SRC" "$NGINX_DST"
+              sudo nginx -t
+              sudo systemctl reload nginx
+              echo "  ✓ Nginx reloaded"
+            else
+              echo "→ Nginx config unchanged — skipping reload"
+            fi
+
+      # ── Install deps + reload PM2 + health check ──
+      - name: Install & restart
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+
+            echo "=== Deploying backend ==="
+            cd ${{ secrets.VPS_DEPLOY_PATH }}/server
+
+            echo "→ Installing production dependencies..."
+            npm ci --omit=dev
+
+            echo "→ Reloading PM2 (zero-downtime)..."
+            if pm2 describe cis-backend > /dev/null 2>&1; then
+              pm2 reload ecosystem.config.js
+            else
+              pm2 start ecosystem.config.js
+            fi
+            pm2 save
+
+            echo "→ Waiting for server to start..."
+            sleep 3
+
+            echo "→ Running health check..."
+            for i in 1 2 3 4 5; do
+              HTTP_CODE=$(curl -sf -o /dev/null -w '%{http_code}' http://127.0.0.1:5000/api/health || true)
+              if [ "$HTTP_CODE" = "200" ]; then
+                echo "✅ Health check passed on attempt $i!"
+
+                # Print deployment summary
+                echo ""
+                echo "╔═══════════════════════════════════════════╗"
+                echo "║   ✅ Backend Deploy Complete              ║"
+                echo "╚═══════════════════════════════════════════╝"
+                pm2 list
+                exit 0
+              fi
+              echo "   Attempt $i/5 — HTTP $HTTP_CODE, retrying in 3s..."
+              sleep 3
+            done
+
+            echo ""
+            echo "❌ Health check failed after 5 attempts!"
+            echo ""
+            echo "  Troubleshooting:"
+            echo "    pm2 logs cis-backend --lines 50"
+            echo "    pm2 describe cis-backend"
+            echo "    curl -v http://127.0.0.1:5000/api/health"
+            exit 1
+
+      # ── Post-deploy summary in GitHub ──
+      - name: Deployment summary
+        if: success()
+        run: |
+          echo "## ✅ Backend Deployed to VPS" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Nginx:** Config synced & validated" >> $GITHUB_STEP_SUMMARY
+          echo "- **PM2:** Zero-downtime reload" >> $GITHUB_STEP_SUMMARY
+          echo "- **Health:** \`/api/health\` → 200 OK" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,365 @@
+# Secure Setup Guide — Razorpay + CI/CD Pipeline
+
+## Table of Contents
+1. [Razorpay Setup](#1-razorpay-setup)
+2. [CI/CD GitHub Secrets Setup](#2-cicd-github-secrets-setup)
+3. [Cloudflare Pages Setup](#3-cloudflare-pages-setup)
+4. [VPS Backend Setup](#4-vps-backend-setup)
+5. [Security Checklist](#5-security-checklist)
+
+---
+
+## 1. Razorpay Setup
+
+### How Your Code Uses Razorpay
+
+Your payment flow works like this:
+
+```mermaid
+sequenceDiagram
+    participant U as User Browser
+    participant F as Frontend (React)
+    participant B as Backend (Express)
+    participant R as Razorpay API
+    participant DB as MongoDB
+
+    U->>F: Click "Pay ₹499"
+    F->>B: POST /api/payment/create-order
+    B->>B: Validate input (Zod)
+    B->>B: Check duplicates
+    B->>DB: Create Registration (status: pending)
+    B->>R: razorpay.orders.create()
+    R-->>B: Order ID
+    B-->>F: { orderId, amount, currency }
+    F->>R: Open Razorpay Checkout popup
+    U->>R: Enter card / UPI
+    R-->>F: Payment success callback
+    R->>B: POST /api/payment/webhook (server-to-server)
+    B->>B: Verify HMAC signature
+    B->>DB: Update status → "paid" (atomic)
+    B->>B: Queue: Email + QR + Google Sheets
+```
+
+### Step 1: Create Razorpay Account
+
+1. Go to [https://dashboard.razorpay.com/signup](https://dashboard.razorpay.com/signup)
+2. Sign up with your email
+3. Complete KYC verification (required for live payments)
+
+### Step 2: Get Test Keys (Development)
+
+1. Login to [Razorpay Dashboard](https://dashboard.razorpay.com)
+2. Go to **Settings** → **API Keys**
+3. Switch to **Test Mode** (toggle at top-left)
+4. Click **Generate Test Key**
+5. You'll get:
+   - `Key ID` → starts with `rzp_test_`
+   - `Key Secret` → shown once, **copy immediately**
+
+### Step 3: Get Live Keys (Production)
+
+1. Same dashboard → switch to **Live Mode**
+2. **Generate Live Key** (requires KYC approval)
+3. You'll get:
+   - `Key ID` → starts with `rzp_live_`
+   - `Key Secret` → shown once, **copy immediately**
+
+> [!CAUTION]
+> **NEVER commit your Key Secret to Git.** It goes ONLY in your server `.env` file and GitHub Secrets. Your code already handles this correctly — the secret is only used server-side in [razorpayService.js](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/services/razorpayService.js).
+
+### Step 4: Set Up Webhook
+
+1. In Razorpay Dashboard → **Settings** → **Webhooks**
+2. Click **Add New Webhook**
+3. Configure:
+
+| Field | Value |
+|-------|-------|
+| **Webhook URL** | `https://yourdomain.com/api/payment/webhook` |
+| **Secret** | Generate a strong random string (32+ chars) |
+| **Active Events** | ✅ `payment.captured` |
+| **Alert Email** | Your admin email |
+
+4. Copy the **Webhook Secret** — this goes in your `.env` as `RAZORPAY_WEBHOOK_SECRET`
+
+> [!IMPORTANT]
+> Your backend verifies every webhook using HMAC SHA256 with `crypto.timingSafeEqual` (see [razorpayService.js:49-61](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/services/razorpayService.js#L49-L61)). This prevents attackers from faking payment confirmations.
+
+### Step 5: Add Keys to Your Server `.env`
+
+Edit your `server/.env` file on the VPS:
+
+```env
+# Razorpay — LIVE keys for production
+RAZORPAY_KEY_ID=rzp_live_xxxxxxxxx
+RAZORPAY_SECRET=your_live_key_secret_here
+RAZORPAY_WEBHOOK_SECRET=your_webhook_secret_here
+```
+
+> [!TIP]
+> **Test Mode Shortcut:** Your code has a built-in test mode! If `RAZORPAY_KEY_ID` is set to `rzp_test_xxxxxxxxxxxx` (the placeholder), the backend auto-processes payments without calling Razorpay at all. This is great for development — see [paymentController.js:91-137](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/controllers/paymentController.js#L91-L137).
+
+### Step 6: Frontend — Razorpay Checkout Script
+
+Already done! Your [index.html](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/index.html#L39) loads the Razorpay checkout script:
+```html
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+```
+
+And your [Register.tsx](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/src/pages/Register.tsx#L205-L233) opens the checkout popup after receiving the order ID from your backend.
+
+### Security Architecture (Already in Place)
+
+| Layer | What Your Code Does | File |
+|-------|-------------------|------|
+| **Server-side pricing** | Price is NEVER sent from frontend — backend looks it up from DB | [paymentController.js:52](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/controllers/paymentController.js#L52) |
+| **HMAC webhook verification** | `timingSafeEqual` prevents timing attacks | [razorpayService.js:49](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/services/razorpayService.js#L49) |
+| **Atomic status update** | `findOneAndUpdate` with `status: "pending"` filter = idempotent | [paymentController.js:217](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/controllers/paymentController.js#L217) |
+| **Always return 200** | Webhook always returns 200 to prevent Razorpay retries | [paymentController.js:251](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/controllers/paymentController.js#L251) |
+| **Rate limiting** | Payment: 20 req/15min, Webhook: 50 req/1min | [rateLimiter.js:27-42](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/middleware/rateLimiter.js#L27-L42) |
+| **Raw body capture** | Webhook HMAC needs raw body, not parsed JSON | [server.js:82-84](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/server.js#L82-L84) |
+| **Duplicate guard** | Rejects if same email+ticketType already paid or pending <30min | [paymentController.js:58-89](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/controllers/paymentController.js#L58-L89) |
+
+---
+
+## 2. CI/CD GitHub Secrets Setup
+
+Your CI/CD pipeline uses GitHub Secrets to securely store credentials. **Secrets are encrypted, never visible in logs, and only available to GitHub Actions runners.**
+
+### Required GitHub Secrets
+
+Go to your GitHub repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+
+#### Backend VPS Deployment Secrets
+
+| Secret Name | What It Is | How to Get It |
+|------------|-----------|---------------|
+| `VPS_HOST` | Your VPS IP address or domain | e.g. `143.198.xxx.xxx` |
+| `VPS_USERNAME` | SSH user on VPS | Usually `root` or a deploy user (see security note below) |
+| `VPS_SSH_KEY` | Private SSH key for passwordless login | Generate with `ssh-keygen` (instructions below) |
+| `VPS_DEPLOY_PATH` | Absolute path to your app on VPS | e.g. `/home/deploy/cis` or `/var/www/cis` |
+| `PRODUCTION_ENV_FILE` | **Entire contents** of your production `.env` | Copy-paste your full `.env` file (all secrets included) |
+
+#### Cloudflare Frontend Secrets
+
+| Secret Name | What It Is | How to Get It |
+|------------|-----------|---------------|
+| `CLOUDFLARE_API_TOKEN` | API token with Pages edit permission | Cloudflare Dashboard → My Profile → API Tokens |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID | Visible in dashboard URL or sidebar |
+
+#### Cloudflare Variable (NOT a secret)
+
+Go to **Settings** → **Secrets and variables** → **Actions** → **Variables** tab:
+
+| Variable Name | Value |
+|--------------|-------|
+| `CLOUDFLARE_PROJECT_NAME` | Name of your Cloudflare Pages project |
+
+### How to Generate SSH Key for VPS
+
+Run this on your local machine:
+
+```bash
+# Generate a dedicated deploy key (no passphrase for CI/CD)
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/cis_deploy_key -N ""
+
+# View the PRIVATE key — paste this into GitHub Secret VPS_SSH_KEY
+cat ~/.ssh/cis_deploy_key
+
+# View the PUBLIC key — add this to VPS
+cat ~/.ssh/cis_deploy_key.pub
+```
+
+Then on your VPS:
+
+```bash
+# Add the public key to authorized_keys
+echo "YOUR_PUBLIC_KEY_HERE" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
+
+> [!WARNING]
+> **Security Best Practice:** Create a dedicated `deploy` user on your VPS instead of using `root`:
+> ```bash
+> # On VPS as root
+> adduser deploy
+> usermod -aG sudo deploy
+> mkdir -p /home/deploy/.ssh
+> # Add the public key to /home/deploy/.ssh/authorized_keys
+> chown -R deploy:deploy /home/deploy/.ssh
+> chmod 700 /home/deploy/.ssh
+> chmod 600 /home/deploy/.ssh/authorized_keys
+> ```
+> Then set `VPS_USERNAME` to `deploy`.
+
+### What Goes in `PRODUCTION_ENV_FILE`
+
+This is the **full contents** of your production `.env` file. Paste this as a single GitHub Secret:
+
+```env
+PORT=5000
+NODE_ENV=production
+
+# MongoDB
+MONGO_URI=mongodb+srv://user:password@cluster.mongodb.net/cis-prod
+
+# JWT
+JWT_SECRET=your-super-long-random-string-min-16-chars
+JWT_REFRESH_SECRET=another-super-long-random-string-min-16-chars
+
+# Razorpay (LIVE keys)
+RAZORPAY_KEY_ID=rzp_live_xxxxxxxxx
+RAZORPAY_SECRET=your_live_secret
+RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
+
+# Google Sheets
+GOOGLE_CLIENT_EMAIL=your-sa@project.iam.gserviceaccount.com
+GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+GOOGLE_SHEET_ID=your-sheet-id
+
+# Brevo Email
+BREVO_API_KEY=xkeysib-xxxxxxxxxxxx
+BREVO_SENDER_EMAIL=noreply@yourdomain.com
+BREVO_SENDER_NAME=Coastal Innovation Summit
+
+# Admin
+ADMIN_EMAIL=admin@yourdomain.com
+ADMIN_PASSWORD=your-strong-admin-password
+
+# Frontend URL (for CORS)
+FRONTEND_URL=https://yourdomain.com
+```
+
+> [!CAUTION]
+> The `.env` file is written to the server with **chmod 600** (owner-only access) during deploy. See [deploy.yml line 60](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/.github/workflows/deploy.yml#L60). Never `cat` or `echo` it in logs.
+
+---
+
+## 3. Cloudflare Pages Setup
+
+### Step 1: Create Cloudflare Account
+
+1. Go to [https://dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up)
+2. Create a free account
+
+### Step 2: Create Cloudflare Pages Project
+
+1. Dashboard → **Workers & Pages** → **Create** → **Pages**
+2. **Connect to Git** → Authorize GitHub → Select your repo
+3. Configure:
+
+| Setting | Value |
+|---------|-------|
+| Project name | `cis2026` (or whatever you want) |
+| Production branch | `main` |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Root directory | `/` (leave default) |
+
+4. Click **Save and Deploy** (the initial deploy will be manual)
+
+### Step 3: Get API Token
+
+1. Go to **My Profile** (top-right) → **API Tokens**
+2. Click **Create Token**
+3. Use **Custom Token**:
+
+| Permission | Access |
+|-----------|--------|
+| Account → Cloudflare Pages | Edit |
+| Account → Account Settings | Read |
+
+4. Click **Create Token** → Copy the token
+
+### Step 4: Get Account ID
+
+Your Account ID is visible in:
+- The dashboard URL: `https://dash.cloudflare.com/ACCOUNT_ID_HERE/...`
+- Or sidebar → scroll to bottom → **Account ID**
+
+### Step 5: Custom Domain (Optional)
+
+1. In your Pages project → **Custom Domains** → **Set up a custom domain**
+2. Enter your domain (e.g., `cis2026.com`)
+3. Cloudflare will configure DNS automatically if your domain is on Cloudflare
+
+---
+
+## 4. VPS Backend Setup
+
+### First-Time Server Setup
+
+```bash
+# SSH into your VPS
+ssh deploy@YOUR_VPS_IP
+
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Install PM2 globally
+sudo npm install -g pm2
+
+# Install Nginx
+sudo apt install -y nginx
+
+# Create app directory
+mkdir -p ~/cis/server
+
+# Copy Nginx config
+sudo cp ~/cis/server/deploy/nginx.conf /etc/nginx/sites-available/cis-backend
+sudo ln -s /etc/nginx/sites-available/cis-backend /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+
+# Set up SSL (Let's Encrypt)
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com
+
+# Set up PM2 to start on boot
+pm2 startup
+# Run the command it tells you to run
+```
+
+### After First Deploy (CI/CD handles this automatically)
+
+The [deploy.yml](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/.github/workflows/deploy.yml) workflow will:
+1. rsync server files to VPS
+2. Write `.env` securely (chmod 600)
+3. Sync Nginx config (with `nginx -t` validation)
+4. `npm ci --omit=dev`
+5. PM2 reload (zero-downtime)
+6. Health check `/api/health`
+
+---
+
+## 5. Security Checklist
+
+### Before Going Live ✅
+
+- [ ] **Razorpay Live Keys** — Replace test keys with live keys in `PRODUCTION_ENV_FILE`
+- [ ] **Razorpay Webhook** — Create webhook in Razorpay dashboard pointing to `https://yourdomain.com/api/payment/webhook`
+- [ ] **Strong JWT Secrets** — Generate with: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
+- [ ] **Strong Admin Password** — At least 12 characters with uppercase, lowercase, numbers, symbols
+- [ ] **MongoDB Atlas IP Whitelist** — Add your VPS IP to MongoDB Atlas → Network Access
+- [ ] **Nginx domain** — Change `yourdomain.com` in [nginx.conf](file:///c:/Users/AYAAN/OneDrive/Desktop/Coastal%20innovation%20summit/server/deploy/nginx.conf) to your actual domain
+- [ ] **SSL Certificate** — Run `certbot` on VPS
+- [ ] **FRONTEND_URL** — Set to your actual Cloudflare Pages URL (e.g., `https://cis2026.com`)
+- [ ] **CORS will block** — If FRONTEND_URL doesn't match the actual frontend domain, API calls will fail
+- [ ] **GitHub Secrets** — All 7 secrets + 1 variable added (see table above)
+- [ ] **Test the flow** — Register → Pay → Check email → Check Google Sheets → Check admin dashboard
+
+### Generate Strong Secrets
+
+Run these commands to generate secure random strings:
+
+```bash
+# JWT Secret (64 bytes = 128 hex chars)
+node -e "console.log('JWT_SECRET=' + require('crypto').randomBytes(64).toString('hex'))"
+
+# JWT Refresh Secret
+node -e "console.log('JWT_REFRESH_SECRET=' + require('crypto').randomBytes(64).toString('hex'))"
+
+# Razorpay Webhook Secret (32 bytes)
+node -e "console.log('RAZORPAY_WEBHOOK_SECRET=' + require('crypto').randomBytes(32).toString('hex'))"
+```

@@ -36,8 +36,6 @@ async function sendConfirmationEmail({
   try {
     const api = getClient();
 
-    const qrBase64 = qrCodeDataUrl.split(",")[1];
-
     const sendSmtpEmail = {
       sender: {
         name: process.env.BREVO_SENDER_NAME,
@@ -51,14 +49,20 @@ async function sendConfirmationEmail({
         amount,
         orderId,
         paymentId,
+        hasQR: !!qrCodeDataUrl,
       }),
-      attachment: [
+    };
+
+    // Only attach QR if generated successfully
+    if (qrCodeDataUrl) {
+      const qrBase64 = qrCodeDataUrl.split(",")[1];
+      sendSmtpEmail.attachment = [
         {
           content: qrBase64,
           name: "ticket-qr.png",
         },
-      ],
-    };
+      ];
+    }
 
     await api.sendTransacEmail(sendSmtpEmail);
     logger.info({ to }, "Email sent");
@@ -81,7 +85,7 @@ async function sendConfirmationEmail({
 /**
  * Build the HTML content for the confirmation email.
  */
-function buildEmailHtml({ name, ticketType, amount, orderId, paymentId }) {
+function buildEmailHtml({ name, ticketType, amount, orderId, paymentId, hasQR = true }) {
   const ticketLabel = ticketType.charAt(0).toUpperCase() + ticketType.slice(1);
 
   return `
@@ -126,8 +130,12 @@ function buildEmailHtml({ name, ticketType, amount, orderId, paymentId }) {
           </table>
         </div>
         <div class="qr-section">
-          <p><strong>Your entry QR code is attached to this email.</strong></p>
-          <p>Present this QR code at the registration desk on event day.</p>
+          ${hasQR
+            ? `<p><strong>Your entry QR code is attached to this email.</strong></p>
+               <p>Present this QR code at the registration desk on event day.</p>`
+            : `<p><strong>Your registration is confirmed.</strong></p>
+               <p>Your QR code will be sent in a follow-up email. Contact us if you don't receive it within 24 hours.</p>`
+          }
         </div>
         <p>If you have any questions, reply to this email or contact us at the summit website.</p>
       </div>

@@ -8,7 +8,7 @@ const rateLimit = require("express-rate-limit");
 /** Global limiter — applies to all routes */
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requests per window per IP
+  max: process.env.NODE_ENV === "development" ? 1000 : 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests. Please try again later." },

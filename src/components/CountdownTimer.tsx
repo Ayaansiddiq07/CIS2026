@@ -1,52 +1,47 @@
-import { useState, useEffect } from 'react';
+import { CalendarDays, MapPin, Users } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const bankyEase = [0.16, 1, 0.3, 1] as const;
 
 export default function CountdownTimer() {
-  const targetDate = new Date('2026-05-10T08:00:00+05:30').getTime();
-
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const difference = targetDate - now;
-
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000),
-        });
-      } else {
-        clearInterval(timer);
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [targetDate]);
+  const items = [
+    { icon: CalendarDays, label: 'Date', value: 'Coming Soon' },
+    { icon: MapPin, label: 'Venue', value: 'Kasaragod, Kerala' },
+    { icon: Users, label: 'Expected', value: '300+ Attendees' },
+  ];
 
   return (
-    <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 py-5 md:py-8 px-4 sm:px-6 md:px-8 bg-white w-full max-w-xl mx-auto rounded-2xl md:rounded-[2.5rem] border border-slate-100 shadow-lg md:shadow-xl">
-      {Object.entries(timeLeft).map(([unit, value], index) => (
-        <div key={unit} className="flex items-center">
-          <div className="flex flex-col items-center min-w-[50px] sm:min-w-[60px]">
-            <span className="font-display text-3xl sm:text-4xl md:text-6xl font-bold text-brand-ocean tabular-nums">
-              {value.toString().padStart(2, '0')}
-            </span>
-            <span className="font-sans text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-slate-500 mt-0.5 font-bold">
-              {unit}
-            </span>
-          </div>
-          {index < Object.entries(timeLeft).length - 1 && (
-            <span className="font-display text-xl sm:text-2xl md:text-4xl font-bold text-slate-200 ml-2 sm:ml-3 md:ml-5 -translate-y-1">:</span>
-          )}
-        </div>
-      ))}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7, ease: bankyEase }}
+      className="w-full border-y border-banky-border/40 bg-banky-gold/20"
+    >
+      <div className="max-w-6xl mx-auto px-5 lg:px-8 py-6 flex flex-wrap items-center justify-center gap-8 md:gap-16">
+        {items.map((item, i) => {
+          const Icon = item.icon;
+          return (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.6, ease: bankyEase }}
+              className="flex items-center gap-3 group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-banky-blue/[0.08] border border-banky-blue/10 flex items-center justify-center transition-all duration-500 group-hover:bg-banky-blue/15 group-hover:scale-110">
+                <Icon className="w-4 h-4 text-banky-blue" />
+              </div>
+              <div>
+                <p className="text-[10px] text-banky-dark/40 uppercase tracking-[0.2em]">{item.label}</p>
+                <p className="text-[14px] text-banky-dark font-medium">{item.value}</p>
+              </div>
+              {i < 2 && <div className="hidden md:block w-px h-8 bg-banky-border/50 ml-10" />}
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
   );
 }

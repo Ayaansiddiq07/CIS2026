@@ -59,27 +59,25 @@ async function processPostPayment(registrationId) {
     logger.error({ err, email: registration.email }, "QR generation failed");
   }
 
-  // 3. Send confirmation email (only if QR was generated)
-  if (qrDataUrl) {
-    try {
-      const emailResult = await emailService.sendConfirmationEmail({
-        to: registration.email,
-        name: registration.name,
-        ticketType: registration.ticketType,
-        amount: registration.amount,
-        orderId: registration.razorpay_order_id,
-        paymentId: registration.razorpay_payment_id,
-        qrCodeDataUrl: qrDataUrl,
-      });
+  // 3. Send confirmation email (even if QR fails — just without attachment)
+  try {
+    const emailResult = await emailService.sendConfirmationEmail({
+      to: registration.email,
+      name: registration.name,
+      ticketType: registration.ticketType,
+      amount: registration.amount,
+      orderId: registration.razorpay_order_id,
+      paymentId: registration.razorpay_payment_id,
+      qrCodeDataUrl: qrDataUrl, // null is OK — emailService handles it
+    });
 
-      if (emailResult.success) {
-        logger.info({ email: registration.email }, "Confirmation email sent");
-      } else {
-        logger.error({ email: registration.email, error: emailResult.error }, "Email failed");
-      }
-    } catch (err) {
-      logger.error({ err, email: registration.email }, "Email send error");
+    if (emailResult.success) {
+      logger.info({ email: registration.email }, "Confirmation email sent");
+    } else {
+      logger.error({ email: registration.email, error: emailResult.error }, "Email failed");
     }
+  } catch (err) {
+    logger.error({ err, email: registration.email }, "Email send error");
   }
 }
 

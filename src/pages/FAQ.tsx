@@ -1,184 +1,100 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const bankyEase = [0.16, 1, 0.3, 1] as const;
 
 const faqCategories = [
-  {
-    category: 'General',
-    items: [
-      {
-        q: 'What is the Coastal Innovation Summit?',
-        a: 'The Coastal Innovation Summit is a structured, beginner-friendly, zero-fluff startup learning experience. It is designed for first-time learners and early-stage founders from the North Malabar region, bringing the core of the startup ecosystem to Tier-2 and Tier-3 regions.',
-      },
-      {
-        q: 'When and where is the event?',
-        a: 'The summit takes place on May 10, 2026 at Govinda Pai Smarakam Bhavanika Auditorium, Manjeshwar, Kasaragod, Kerala. The venue is part of the Gilivindu Project, a national-level centre of literature, culture, and research.',
-      },
-      {
-        q: 'Who is this event for?',
-        a: 'The event is for anyone interested in startups — first-time learners, students, early-stage founders, and experienced professionals looking to network and contribute to regional ecosystem building.',
-      },
-      {
-        q: 'Who organizes this?',
-        a: 'The summit is organized by BuildUp Kasaragod, an NGO focused on fostering entrepreneurship and innovation in the Kasaragod district. BuildUp Kasaragod works on grassroots ecosystem development in the North Malabar region.',
-      },
-    ],
-  },
-  {
-    category: 'Registration & Passes',
-    items: [
-      {
-        q: 'How do I register?',
-        a: 'Head to the Register page to see available tiers. We offer Gold Delegate (₹499), Diamond VIP (₹1,499), Bulk Pass (₹3,999 for 10), and Stall Space (₹4,999/booth) options.',
-      },
-      {
-        q: 'What does the Gold Delegate pass include?',
-        a: 'The Gold Delegate pass includes full access to the Main Stage sessions, access to all parallel Activity Zones (Snake & Ladder, Debate, Startup Jam), and standard networking opportunities.',
-      },
-      {
-        q: 'What additional benefits does Diamond VIP offer?',
-        a: 'Diamond VIP includes priority seating on the Main Stage, VIP Networking Lounge access, private Speaker Q&A sessions, and exclusive summit merchandise.',
-      },
-      {
-        q: 'Can I register as a group?',
-        a: 'Yes. The Bulk Pass (₹3,999) includes 10 Gold Delegate passes, fast-track group registration, and a dedicated point-of-contact for assistance. Ideal for colleges and institutions.',
-      },
-    ],
-  },
-  {
-    category: 'Event Day',
-    items: [
-      {
-        q: 'What time does the event start?',
-        a: 'Registration and check-in open at 08:00 AM. The first session, "From Zero to First Step," begins at 08:30 AM. The event runs until 5:30 PM.',
-      },
-      {
-        q: 'What are the Activity Zones?',
-        a: 'The summit features four parallel Activity Zones: Startup Snake & Ladder (interactive game), Startup Debate (critical thinking sessions), Startup Jam (rapid ideation activity), and Exhibition Stalls (tribal enterprise, heritage, agri-tech, and student startups).',
-      },
-      {
-        q: 'Will food be provided?',
-        a: 'Lunch and refreshments during the designated break (12:25 PM - 1:30 PM) are included. There will also be a tea break at 10:50 AM.',
-      },
-      {
-        q: 'Can I book a stall?',
-        a: 'Yes. Stall Space starts at ₹4,999 per booth and includes a 3×3 meter premium space, 2 exhibitor passes, logo placement in the partner directory, and a pitch opportunity.',
-      },
-    ],
-  },
-  {
-    category: 'Contact & Support',
-    items: [
-      {
-        q: 'How can I contact the organizers?',
-        a: 'Email us at contact@buildupkasaragod.org or visit buildupkasaragod.org. Our office is located at Lancof, First Floor, CH Building Complex, Neerchal, Kasaragod – 671323.',
-      },
-      {
-        q: 'Can my organization partner with the summit?',
-        a: 'Absolutely. We are actively onboarding ecosystem partners, knowledge partners, and community organizations. Reach out via email for partnership details.',
-      },
-    ],
-  },
+  { category: 'General', items: [
+    { q: 'What is the Coastal Innovation Summit?', a: 'A structured, beginner-friendly startup learning experience for first-time learners and early-stage founders from the North Malabar region.' },
+    { q: 'When and where is the event?', a: 'The date, venue, and timings are being finalized. The event will be held in Kasaragod district, Kerala.' },
+    { q: 'Who is this event for?', a: 'Anyone interested in startups — students, early-stage founders, and experienced professionals.' },
+    { q: 'Who organizes this?', a: 'BuildUp Kasaragod, an NGO focused on entrepreneurship in the Kasaragod district.' },
+  ]},
+  { category: 'Registration & Passes', items: [
+    { q: 'How do I register?', a: 'Visit the Register page. We offer Gold Delegate (₹499), Diamond VIP (₹1,499), Bulk Pass (₹3,999 for 10), and Stall Space (₹4,999/booth).' },
+    { q: 'What does Gold Delegate include?', a: 'Full access to Main Stage sessions, all parallel Activity Zones, and standard networking.' },
+    { q: 'What does Diamond VIP offer?', a: 'Priority seating, VIP Networking Lounge, private Speaker Q&A, and exclusive merchandise.' },
+    { q: 'Can I register as a group?', a: 'Yes. The Bulk Pass (₹3,999) includes 10 Gold Delegate passes.' },
+  ]},
+  { category: 'Event Day', items: [
+    { q: 'What are the Activity Zones?', a: 'Four parallel zones: Startup Snake & Ladder, Startup Debate, Startup Jam, and Exhibition Stalls.' },
+    { q: 'Will food be provided?', a: 'Lunch and refreshments are included for all attendees.' },
+    { q: 'Can I book a stall?', a: 'Yes. Stall Space starts at ₹4,999/booth with a 3×3m premium space and 2 exhibitor passes.' },
+  ]},
+  { category: 'Contact', items: [
+    { q: 'How can I contact the organizers?', a: 'Email contact@buildupkasaragod.org or visit buildupkasaragod.org.' },
+    { q: 'Can my organization partner?', a: 'Absolutely. We are actively onboarding ecosystem partners. Reach out via email.' },
+  ]},
 ];
-
-// Flatten FAQs for JSON-LD structured data
-const allFaqs = faqCategories.flatMap((cat) => cat.items);
+const allFaqs = faqCategories.flatMap(c => c.items);
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<string | null>(null);
-
-  const toggle = (key: string) => {
-    setOpenIndex(openIndex === key ? null : key);
-  };
+  const toggle = (key: string) => setOpenIndex(openIndex === key ? null : key);
 
   return (
     <>
-      {/* FAQ Schema Structured Data (JSON-LD for SEO) */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: allFaqs.map((faq) => ({
-              '@type': 'Question',
-              name: faq.q,
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: faq.a,
-              },
-            })),
-          }),
-        }}
-      />
-
-      <div className="min-h-screen bg-brand-surface pt-24 md:pt-32 pb-16 md:pb-24">
-        <div className="max-w-3xl mx-auto px-6 lg:px-12">
-          {/* Header */}
-          <div className="mb-10 md:mb-14">
-            <div className="inline-flex items-center gap-2 py-1 px-3 border border-slate-300 text-[10px] font-bold tracking-[0.2em] uppercase text-slate-600 mb-4">
-              <HelpCircle className="w-3.5 h-3.5 text-brand-accent" />
-              <span>Help Centre</span>
-            </div>
-            <h1 className="text-3xl md:text-5xl font-display font-black text-brand-ocean tracking-tight uppercase mb-3">
-              Frequently Asked <span className="text-brand-accent">Questions</span>
-            </h1>
-            <p className="text-[15px] text-slate-600 font-medium">
-              Everything you need to know about the Coastal Innovation Summit.
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: allFaqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }) }} />
+      <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+        <div className="max-w-2xl mx-auto px-5 lg:px-8">
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }} className="mb-12">
+            <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+              <span className="w-8 h-px bg-banky-blue inline-block" />Help
             </p>
-          </div>
+            <h1 className="text-3xl md:text-[44px] font-display font-bold text-banky-dark mb-4 leading-tight">Frequently Asked Questions</h1>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
+              className="text-[16px] text-banky-dark/50">Everything you need to know about the Coastal Innovation Summit.</motion.p>
+          </motion.div>
 
-          {/* FAQ Categories */}
-          {faqCategories.map((category, catIdx) => (
-            <div key={catIdx} className="mb-8">
-              <h2 className="text-xs font-bold text-brand-red uppercase tracking-[0.25em] mb-3 pl-1">
-                {category.category}
+          {faqCategories.map((cat, catIdx) => (
+            <motion.div key={catIdx}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.6, delay: catIdx * 0.05, ease: bankyEase }}
+              className="mb-8"
+            >
+              <h2 className="text-[13px] font-semibold text-banky-blue uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                <span className="w-4 h-px bg-banky-blue inline-block" />{cat.category}
               </h2>
-              <div className="border border-slate-200 divide-y divide-slate-200">
-                {category.items.map((faq, faqIdx) => {
+              <div className="banky-card divide-y divide-banky-border/20 overflow-hidden">
+                {cat.items.map((faq, faqIdx) => {
                   const key = `${catIdx}-${faqIdx}`;
                   const isOpen = openIndex === key;
                   return (
-                    <button
-                      key={key}
-                      onClick={() => toggle(key)}
-                      className="w-full text-left p-5 md:p-6 bg-white hover:bg-slate-50 transition-colors duration-100"
-                      aria-expanded={isOpen}
-                    >
+                    <button key={key} onClick={() => toggle(key)} className="w-full text-left p-5 hover:bg-banky-yellow/30 transition-colors duration-500" aria-expanded={isOpen}>
                       <div className="flex items-center justify-between gap-4">
-                        <h3 className="text-[15px] md:text-base font-bold text-slate-900">{faq.q}</h3>
-                        <ChevronDown
-                          className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
-                            isOpen ? 'rotate-180' : ''
-                          }`}
-                        />
+                        <h3 className="text-[15px] font-medium text-banky-dark">{faq.q}</h3>
+                        <ChevronDown className={`w-4 h-4 text-banky-dark/40 shrink-0 transition-transform duration-500 ${isOpen ? 'rotate-180 text-banky-blue' : ''}`} />
                       </div>
-                      <div
-                        className={`overflow-hidden transition-all duration-200 ${
-                          isOpen ? 'max-h-40 opacity-100 mt-3' : 'max-h-0 opacity-0'
-                        }`}
-                      >
-                        <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                          {faq.a}
-                        </p>
-                      </div>
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.4, ease: bankyEase }}
+                            className="overflow-hidden"
+                          >
+                            <p className="text-[14px] text-banky-dark/60 leading-relaxed mt-3">{faq.a}</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </button>
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
           ))}
 
-          {/* CTA */}
-          <div className="mt-10 bg-brand-ocean p-6 md:p-8 text-center">
-            <p className="text-slate-300 font-medium text-sm mb-4">Still have questions?</p>
-            <Link
-              to="/contact"
-              className="inline-block px-6 py-3 bg-brand-accent text-white font-bold uppercase tracking-widest text-xs hover:bg-teal-600 transition-colors"
-            >
-              Contact Organizers
-            </Link>
-          </div>
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: bankyEase }}
+            className="rounded-2xl p-7 md:p-10 text-center mt-8 bg-banky-dark"
+          >
+            <p className="text-white/50 text-[14px] mb-4">Still have questions?</p>
+            <Link to="/contact" className="btn-primary inline-block px-6 py-3 font-semibold text-[14px] rounded-full">Contact Organizers</Link>
+          </motion.div>
         </div>
       </div>
     </>

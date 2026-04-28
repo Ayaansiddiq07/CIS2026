@@ -1,87 +1,131 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { MapPin, Lightbulb, Target, Globe, Sparkles, Users, Heart, Star } from 'lucide-react';
+import BankyTextReveal from '../components/BankyTextReveal';
+
+const bankyEase = [0.16, 1, 0.3, 1] as const;
+const staggerContainer = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.15 } } };
+const staggerChild = { hidden: { opacity: 0, y: 40, filter: 'blur(4px)' }, visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: bankyEase } } };
+
+/* Scroll-triggered reveal */
+function Reveal({ children, className = '', direction = 'up' }: { children: React.ReactNode; className?: string; direction?: 'up' | 'left' | 'right' | 'scale' }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const variants: Record<string, { hidden: Record<string, number>; visible: Record<string, number> }> = {
+    up: { hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } },
+    left: { hidden: { opacity: 0, x: -60 }, visible: { opacity: 1, x: 0 } },
+    right: { hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0 } },
+    scale: { hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } },
+  };
+  return (
+    <motion.div ref={ref} initial={variants[direction].hidden} animate={inView ? variants[direction].visible : {}}
+      transition={{ duration: 0.9, ease: bankyEase }} className={className}>
+      {children}
+    </motion.div>
+  );
+}
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-brand-surface pt-24 md:pt-32 pb-16 md:pb-24">
-      <div className="max-w-4xl mx-auto px-6 lg:px-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-3xl md:text-5xl font-display font-black text-brand-ocean tracking-tight uppercase mb-4">
-            Executive <span className="text-brand-accent">Summary</span>
+    <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+      <div className="max-w-3xl mx-auto px-5 lg:px-8">
+        {/* Hero */}
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }}>
+          <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+            <span className="w-8 h-px bg-banky-blue inline-block" />
+            Overview
+          </p>
+          <h1 className="text-3xl md:text-[44px] font-display font-bold text-banky-dark mb-6 leading-tight">
+            <BankyTextReveal text="Executive Summary" by="char" delay={0.08} />
           </h1>
-          
-          <div className="prose prose-base text-[15px] leading-relaxed text-slate-600 font-medium mb-12">
-            <p className="mb-4">
-              The Coastal Innovation Summit is well-structured, credible, and purpose-built. It is not positioned to compete in scale with flagship startup festivals. Instead, it fills a critical gap by serving Tier-2 and Tier-3 regions with a structured, beginner-friendly, zero-fluff startup learning experience.
-            </p>
-            <p>
-              This summit is designed as a focused, education-first startup event aimed primarily at first-time learners and early-stage founders from the North Malabar region. The objective is clarity, seriousness, and practical value, not scale for appearance.
-            </p>
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-display font-black text-brand-ocean uppercase mb-4 border-b border-slate-200 pb-3">
-            Venue & <span className="text-brand-red">Significance</span>
-          </h2>
-          <div className="bg-white p-6 md:p-8 rounded-none border border-slate-200 mb-12">
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Govinda Pai Smarakam Bhavanika Auditorium</h3>
-            <p className="text-sm text-brand-accent font-bold mb-4 uppercase tracking-widest">Manjeshwar, Kasaragod</p>
-            <p className="text-[15px] leading-relaxed text-slate-600 mb-4">
-              The venue is part of the Gilivindu Project, developed jointly by the Governments of Kerala and Karnataka as a national-level centre of literature, culture, and research.
-            </p>
-            <p className="text-[15px] leading-relaxed text-slate-600">
-              <strong>Why This Venue Matters:</strong> Govinda Pai Smarakam is a culturally and historically significant landmark in Kasaragod. Hosting the Startup Conclave here sends a clear message that innovation and entrepreneurship belong to this region's legacy. Choosing this venue aligns the conclave with regional pride, intellectual heritage, and long-term ecosystem building.
-            </p>
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-display font-black text-brand-ocean uppercase mb-4 border-b border-slate-200 pb-3">
-            Audience <span className="text-brand-accent">Profile</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-slate-200 bg-slate-200 mb-12">
-            <div className="bg-white p-6 lg:p-8 hover:bg-slate-50 transition-colors">
-              <span className="text-brand-accent font-display font-black text-2xl mb-3 block border-b-2 border-brand-accent pb-2 inline-block">01</span>
-              <h3 className="text-[15px] font-bold text-slate-900 mb-2 uppercase">First-time Learners</h3>
-              <p className="text-[13px] text-slate-600 font-medium leading-relaxed">Accessible entry points into the startup ecosystem for absolute beginners.</p>
-            </div>
-            <div className="bg-white p-6 lg:p-8 hover:bg-slate-50 transition-colors border-t border-slate-200 md:border-t-0 md:border-l">
-              <span className="text-brand-red font-display font-black text-2xl mb-3 block border-b-2 border-brand-red pb-2 inline-block">02</span>
-              <h3 className="text-[15px] font-bold text-slate-900 mb-2 uppercase">Early Founders</h3>
-              <p className="text-[13px] text-slate-600 font-medium leading-relaxed">Practical guidance for navigating early execution challenges effectively.</p>
-            </div>
-            <div className="bg-white p-6 lg:p-8 hover:bg-slate-50 transition-colors border-t border-slate-200 md:border-t-0 md:border-l">
-              <span className="text-brand-ocean font-display font-black text-2xl mb-3 block border-b-2 border-brand-ocean pb-2 inline-block">03</span>
-              <h3 className="text-[15px] font-bold text-slate-900 mb-2 uppercase">Experienced Pros</h3>
-              <p className="text-[13px] text-slate-600 font-medium leading-relaxed">Networking, insights, and critical regional ecosystem building.</p>
-            </div>
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-display font-black text-brand-ocean uppercase mb-4 border-b border-slate-200 pb-3">
-            Outcome & <span className="text-brand-accent">Value</span>
-          </h2>
-          <div className="bg-brand-ocean p-6 sm:p-10 lg:p-12 mb-8 md:mb-12 text-white">
-            <h3 className="text-2xl font-display font-bold mb-8 text-brand-accent uppercase tracking-wide">Designed to deliver meaningful value</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              <div className="border-l-2 border-brand-red pl-6">
-                <span className="text-brand-red text-xs font-bold tracking-widest uppercase block mb-2">Value 01</span>
-                <p className="font-medium text-slate-300">Support active learning through direct participation and hands-on experiences.</p>
-              </div>
-              <div className="border-l-2 border-brand-accent pl-6">
-                <span className="text-brand-accent text-xs font-bold tracking-widest uppercase block mb-2">Value 02</span>
-                <p className="font-medium text-slate-300">Encourage confidence, collaboration, and entrepreneurial thinking.</p>
-              </div>
-              <div className="border-l-2 border-brand-accent pl-6">
-                <span className="text-brand-accent text-xs font-bold tracking-widest uppercase block mb-2">Value 03</span>
-                <p className="font-medium text-slate-300">Showcase regional culture, tribal heritage, and local inclusiveness.</p>
-              </div>
-              <div className="border-l-2 border-brand-red pl-6">
-                <span className="text-brand-red text-xs font-bold tracking-widest uppercase block mb-2">Value 04</span>
-                <p className="font-medium text-slate-300">Create memorable experiences that extend the impact of the summit beyond the main stage.</p>
-              </div>
-            </div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.7, ease: bankyEase }}
+            className="text-[16px] leading-relaxed text-banky-dark/60 space-y-4 mb-16"
+          >
+            <p>The Coastal Innovation Summit fills a critical gap by serving Tier-2 and Tier-3 regions with a structured, beginner-friendly startup learning experience.</p>
+            <p>This summit is a focused, education-first startup event for first-time learners and early-stage founders from the North Malabar region.</p>
+          </motion.div>
         </motion.div>
+
+        {/* Venue */}
+        <Reveal className="mb-16" direction="left">
+          <p className="text-amber-600 text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+            <span className="w-8 h-px bg-amber-600 inline-block" />
+            Location
+          </p>
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-banky-dark mb-6">Venue & Significance</h2>
+          <div className="banky-card p-6 md:p-8 relative overflow-hidden">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-amber-500/[0.1] border border-amber-500/20 flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-[15px] text-banky-dark font-medium">Venue details to be announced</p>
+                <p className="text-[13px] text-banky-dark/50">Kasaragod District, Kerala</p>
+              </div>
+            </div>
+            <p className="text-[15px] text-banky-dark/60 mb-4">The venue will be a culturally and historically significant location in Kasaragod.</p>
+            <div className="bg-banky-yellow/40 p-4 rounded-xl border-l-2 border-l-amber-600">
+              <p className="text-[14px] text-banky-dark/60 italic">The chosen venue will send a clear message that innovation and entrepreneurship belong to this region's legacy.</p>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Audience */}
+        <Reveal className="mb-16" direction="right">
+          <p className="text-purple-600 text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+            <span className="w-8 h-px bg-purple-600 inline-block" />
+            Who attends
+          </p>
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-banky-dark mb-6">Audience Profile</h2>
+          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { icon: Lightbulb, title: 'First-time Learners', desc: 'Accessible entry points into the startup ecosystem.' },
+              { icon: Target, title: 'Early Founders', desc: 'Practical guidance for execution challenges.' },
+              { icon: Globe, title: 'Experienced Pros', desc: 'Networking and ecosystem building.' },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.div key={item.title} variants={staggerChild} className="card-hover p-6 banky-card group relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-banky-blue/40 to-transparent" />
+                  <Icon className="w-5 h-5 text-banky-blue mb-4 transition-transform duration-500 group-hover:scale-110" />
+                  <h3 className="text-[15px] font-semibold text-banky-dark mb-1 group-hover:text-banky-blue transition-colors duration-300">{item.title}</h3>
+                  <p className="text-[13px] text-banky-dark/50 leading-relaxed">{item.desc}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </Reveal>
+
+        {/* Impact */}
+        <Reveal direction="scale">
+          <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+            <span className="w-8 h-px bg-banky-blue inline-block" />
+            Impact
+          </p>
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-banky-dark mb-6">Outcome & Value</h2>
+          <div className="banky-card p-7 md:p-10 relative overflow-hidden">
+            <h3 className="text-[17px] font-display font-semibold text-banky-dark mb-7">Designed to deliver meaningful value</h3>
+            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { text: 'Support active learning through participation.', icon: Users },
+                { text: 'Encourage confidence and entrepreneurial thinking.', icon: Heart },
+                { text: 'Showcase regional culture and heritage.', icon: Star },
+                { text: 'Create memorable experiences beyond the stage.', icon: Sparkles },
+              ].map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div key={i} variants={staggerChild} className="flex items-start gap-3 p-4 bg-banky-yellow/40 rounded-xl border border-banky-border/20 hover:border-banky-blue/20 transition-all duration-500 group">
+                    <Icon className="w-4 h-4 text-banky-blue shrink-0 mt-0.5 transition-transform duration-500 group-hover:scale-110" />
+                    <p className="text-banky-dark/60 text-[14px] leading-relaxed">{item.text}</p>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
+        </Reveal>
       </div>
     </div>
   );

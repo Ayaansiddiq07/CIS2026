@@ -7,16 +7,16 @@
  */
 
 const Registration = require("../models/Registration");
+const SiteContent = require("../models/SiteContent");
 const razorpayService = require("../services/razorpayService");
 const { enqueue } = require("../services/taskQueue");
 const { processPostPayment } = require("../services/postPaymentWorker");
 const logger = require("../config/logger");
 
 /**
- * Ticket type → amount mapping (in rupees).
- * Single source of truth for pricing — never trust frontend amounts.
+ * Fallback ticket prices if SiteContent is not yet initialised.
  */
-const TICKET_PRICES = {
+const FALLBACK_PRICES = {
   gold: 499,
   diamond: 1499,
   bulk: 3999,
@@ -24,18 +24,68 @@ const TICKET_PRICES = {
 };
 
 /**
+ * Get ticket price from SiteContent (dynamic) or fallback.
+ */
+async function getTicketPrice(ticketType) {
+  try {
+    const content = await SiteContent.getSingleton();
+    if (content?.pricing?.[ticketType]?.price) {
+      return content.pricing[ticketType].price;
+    }
+  } catch { /* fall through to fallback */ }
+  return FALLBACK_PRICES[ticketType] || null;
+}
+
+/**
  * POST /api/payment/create-order
  * Creates a Razorpay order and saves a pending registration.
  * If Razorpay keys are dummy, auto-processes in test mode.
+ *
+ * DUPLICATE GUARD: rejects if same email already has a paid/pending
+ * registration for the same ticketType (within last 24h for pending).
  */
 async function createOrder(req, res, next) {
   try {
     const { name, email, phone, ticketType } = req.body;
 
     // Server determines price — NEVER trust frontend
-    const amount = TICKET_PRICES[ticketType];
+    const amount = await getTicketPrice(ticketType);
     if (!amount) {
       return res.status(400).json({ error: "Invalid ticket type" });
+    }
+
+    // ── DUPLICATE CHECK ──
+    const existingPaid = await Registration.findOne({
+      email: email.toLowerCase(),
+      ticketType,
+      status: "paid",
+    });
+    if (existingPaid) {
+      return res.status(409).json({
+        error: `You already have a confirmed ${ticketType} registration. Check your email for the confirmation.`,
+      });
+    }
+
+    // Clean up stale pending registrations (>30 min old) for same email+ticket
+    const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000);
+    await Registration.deleteMany({
+      email: email.toLowerCase(),
+      ticketType,
+      status: "pending",
+      createdAt: { $lt: thirtyMinAgo },
+    });
+
+    // Check for recent pending (within 30 min) — user might have a checkout in progress
+    const recentPending = await Registration.findOne({
+      email: email.toLowerCase(),
+      ticketType,
+      status: "pending",
+      createdAt: { $gte: thirtyMinAgo },
+    });
+    if (recentPending) {
+      return res.status(409).json({
+        error: "A registration is already in progress. Please complete the payment or wait a few minutes and try again.",
+      });
     }
 
     const isDummyKey =
@@ -44,19 +94,31 @@ async function createOrder(req, res, next) {
 
     if (isDummyKey) {
       // ── TEST MODE: bypass Razorpay entirely ──
-      const mockOrderId = `order_TEST_${Date.now()}`;
-      const mockPaymentId = `pay_TEST_${Date.now()}`;
+      const uid = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      const mockOrderId = `order_TEST_${uid}`;
+      const mockPaymentId = `pay_TEST_${uid}`;
 
-      const registration = await Registration.create({
-        name,
-        email,
-        phone,
-        ticketType,
-        amount,
-        razorpay_order_id: mockOrderId,
-        razorpay_payment_id: mockPaymentId,
-        status: "paid",
-      });
+      let registration;
+      try {
+        registration = await Registration.create({
+          name,
+          email,
+          phone,
+          ticketType,
+          amount,
+          razorpay_order_id: mockOrderId,
+          razorpay_payment_id: mockPaymentId,
+          status: "paid",
+        });
+      } catch (createErr) {
+        if (createErr.code === 11000) {
+          const field = Object.keys(createErr.keyValue || {})[0] || "email";
+          return res.status(409).json({
+            error: `A registration with this ${field} already exists. Please check your email for confirmation.`,
+          });
+        }
+        throw createErr;
+      }
 
       logger.info({ email, orderId: mockOrderId }, "TEST MODE: auto-processed registration");
 
@@ -75,15 +137,26 @@ async function createOrder(req, res, next) {
     }
 
     // ── PRODUCTION MODE: real Razorpay ──
-    const registration = await Registration.create({
-      name,
-      email,
-      phone,
-      ticketType,
-      amount,
-      razorpay_order_id: "pending",
-      status: "pending",
-    });
+    let registration;
+    try {
+      registration = await Registration.create({
+        name,
+        email,
+        phone,
+        ticketType,
+        amount,
+        razorpay_order_id: "pending",
+        status: "pending",
+      });
+    } catch (createErr) {
+      if (createErr.code === 11000) {
+        const field = Object.keys(createErr.keyValue || {})[0] || "email";
+        return res.status(409).json({
+          error: `A registration with this ${field} already exists. Please check your email for confirmation.`,
+        });
+      }
+      throw createErr;
+    }
 
     const order = await razorpayService.createOrder(
       amount * 100,
@@ -110,14 +183,6 @@ async function createOrder(req, res, next) {
 /**
  * POST /api/payment/webhook
  * Razorpay webhook handler — IDEMPOTENT, ATOMIC, ALWAYS 200.
- *
- * Flow:
- * 1. Verify HMAC signature
- * 2. Atomic findOneAndUpdate (idempotency + race-condition safe)
- * 3. Enqueue post-payment tasks to background queue
- * 4. Return 200 IMMEDIATELY
- *
- * RULE: This handler NEVER returns non-200 to Razorpay (prevents infinite retries).
  */
 async function handleWebhook(req, res) {
   try {
@@ -127,7 +192,6 @@ async function handleWebhook(req, res) {
       return res.status(200).json({ status: "ignored", reason: "missing_signature" });
     }
 
-    // Verify HMAC
     const isValid = razorpayService.verifyWebhookSignature(
       req.rawBody,
       signature,
@@ -141,7 +205,6 @@ async function handleWebhook(req, res) {
 
     const event = req.body.event;
 
-    // Only process successful payments
     if (event !== "payment.captured") {
       logger.info({ event }, "Webhook: ignoring event");
       return res.status(200).json({ status: "ignored" });
@@ -151,11 +214,6 @@ async function handleWebhook(req, res) {
     const paymentId = payment.id;
     const orderId = payment.order_id;
 
-    // ── ATOMIC IDEMPOTENT UPDATE ──
-    // findOneAndUpdate is atomic: only ONE concurrent request can successfully
-    // set razorpay_payment_id. The filter ensures:
-    // - The order exists
-    // - It hasn't been paid yet (status: "pending")
     const updated = await Registration.findOneAndUpdate(
       {
         razorpay_order_id: orderId,
@@ -172,8 +230,6 @@ async function handleWebhook(req, res) {
     );
 
     if (!updated) {
-      // Either already processed (idempotent) or order doesn't exist.
-      // Check which case it is for logging.
       const existing = await Registration.findOne({ razorpay_order_id: orderId });
       if (existing && existing.status === "paid") {
         logger.info({ paymentId, orderId }, "Webhook: duplicate payment — already processed");
@@ -185,16 +241,12 @@ async function handleWebhook(req, res) {
 
     logger.info({ paymentId, orderId, email: updated.email }, "Webhook: payment confirmed");
 
-    // ── RESPOND FAST — enqueue post-payment tasks ──
     res.status(200).json({ status: "ok" });
 
-    // Fire-and-forget via queue (retry + backoff built in)
     enqueue(`post-payment:${updated._id}`, () =>
       processPostPayment(updated._id.toString())
     );
   } catch (err) {
-    // CRITICAL: Always return 200 to Razorpay, even on unexpected errors.
-    // Log the error for investigation, but don't trigger infinite retries.
     logger.error({ err }, "Webhook: unexpected error — returning 200 to prevent retries");
     res.status(200).json({ status: "error_logged" });
   }

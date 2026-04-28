@@ -1,12 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-red: #ff4d4d;
-  --color-brand-ocean: #0f172a;
-  --color-brand-accent: #0da292;
-  --color-brand-light: #ffffff;
-  --color-brand-surface: #f8fafc;
-  
+  /* ── Banky.io EXACT color palette ── */
+  --color-banky-yellow: #FFD60A;
+  --color-banky-gold: #FFC800;
+  --color-banky-cream: #FFF8E1;
+  --color-banky-blue: #1B3FE4;
+  --color-banky-blue-dark: #1533B8;
+  --color-banky-blue-light: #4D6AFF;
+  --color-banky-dark: #0D0D0D;
+  --color-banky-black: #1A1A1A;
+  --color-banky-white: #FFFFFF;
+  --color-banky-gray: #666666;
+  --color-banky-gray-light: #999999;
+  --color-banky-border: #E0D6B8;
+  --color-banky-card: #FFF4CC;
+  --color-banky-card-alt: #FFFAEB;
+  --color-banky-surface: #FFE566;
+
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-display: "Outfit", system-ui, -apple-system, sans-serif;
 }
@@ -22,69 +33,394 @@
   }
 
   body {
-    @apply bg-brand-surface text-brand-ocean font-sans antialiased selection:bg-brand-accent/20 selection:text-brand-ocean;
+    background-color: var(--color-banky-yellow);
+    color: var(--color-banky-dark);
+    font-family: var(--font-sans);
     overflow-x: hidden;
     line-height: 1.6;
     letter-spacing: -0.011em;
   }
 
-  /* Typography Scale — tighter headings, relaxed body */
-  h1 {
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-    font-weight: 900;
-  }
+  h1 { line-height: 0.92; letter-spacing: -0.045em; font-weight: 900; }
+  h2 { line-height: 1.05; letter-spacing: -0.035em; font-weight: 700; }
+  h3 { line-height: 1.2; letter-spacing: -0.02em; font-weight: 600; }
+  h4, h5, h6 { line-height: 1.25; letter-spacing: -0.005em; font-weight: 600; }
+  p { line-height: 1.75; font-weight: 400; }
+  strong, b { font-weight: 600; }
 
-  h2 {
-    line-height: 1.05;
-    letter-spacing: -0.025em;
-    font-weight: 900;
-  }
+  img { max-width: 100%; height: auto; display: block; }
 
-  h3 {
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-    font-weight: 700;
-  }
-
-  h4, h5, h6 {
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    font-weight: 700;
-  }
-
-  p {
-    line-height: 1.7;
-    font-weight: 400;
-  }
-
-  /* Strong has slightly heavier weight for emphasis */
-  strong, b {
-    font-weight: 700;
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  /* Smoother focus outlines */
   :focus-visible {
-    outline: 2px solid var(--color-brand-accent);
+    outline: 2px solid var(--color-banky-blue);
     outline-offset: 2px;
   }
 
-  /* Better link defaults */
-  a {
-    text-decoration-skip-ink: auto;
-  }
+  a { text-decoration-skip-ink: auto; }
 }
 
-/* Reduce motion for users who prefer it */
+/* ── Selection ── */
+::selection {
+  background: rgba(27, 63, 228, 0.2);
+  color: #0D0D0D;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #FFC800; }
+::-webkit-scrollbar-thumb { background: #CC9F00; border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: #B38A00; }
+
+/* ══════════════════════════════════
+   KEYFRAMES
+   ══════════════════════════════════ */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(80px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-80px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(80px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes wordReveal {
+  0% { opacity: 0; transform: translateY(100%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes charReveal {
+  0% { opacity: 0; transform: translateY(50px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lineSweep {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Banky-style line draw */
+@keyframes drawLine {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ══════════════════════════════════
+   ANIMATION UTILITIES
+   ══════════════════════════════════ */
+
+.animate-fade-up { animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-down { animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-left { animation: fadeInLeft 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-right { animation: fadeInRight 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-scale-in { animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-marquee { animation: marquee 30s linear infinite; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
+
+/* BankyTextReveal — GPU-composited character/word reveal */
+.banky-text-unit {
+  opacity: 0;
+  transform: translateY(100%);
+  animation-name: wordReveal;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+  will-change: transform, opacity;
+}
+
+/* ══════════════════════════════════
+   COMPONENT STYLES — BANKY PALETTE
+   ══════════════════════════════════ */
+
+/* Glass card — banky warm yellow style */
+.glass-card {
+  background: rgba(255, 250, 235, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(204, 159, 0, 0.15);
+}
+
+/* Primary button — banky blue filled */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-banky-blue);
+  color: var(--color-banky-white);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.btn-primary:hover::before { opacity: 1; }
+
+.btn-primary:hover {
+  box-shadow: 0 8px 30px rgba(27, 63, 228, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Outlined button — banky style pill border */
+.btn-outline {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  color: var(--color-banky-dark);
+  border: 2px solid var(--color-banky-dark);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-outline:hover {
+  background: var(--color-banky-dark);
+  color: var(--color-banky-yellow);
+  transform: translateY(-2px);
+}
+
+/* Card hover lift — GPU accelerated */
+.card-hover {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.card-hover:hover {
+  transform: translateY(-6px) translateZ(0);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(27, 63, 228, 0.08);
+}
+
+/* Blue gradient text — banky exact */
+.text-gradient {
+  background: linear-gradient(135deg, #1B3FE4 0%, #4D6AFF 40%, #1B3FE4 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 5s ease infinite;
+}
+
+/* Section divider */
+.section-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(204, 159, 0, 0.3) 20%, rgba(204, 159, 0, 0.3) 80%, transparent 100%);
+}
+
+/* Step number — banky numbered circle style */
+.step-number {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: rgba(27, 63, 228, 0.08);
+  border: 1px solid rgba(27, 63, 228, 0.12);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-banky-blue);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.step-number:hover {
+  background: rgba(27, 63, 228, 0.14);
+  transform: scale(1.08);
+  box-shadow: 0 0 30px rgba(27, 63, 228, 0.15);
+}
+
+/* Horizontal scroll */
+.horizontal-scroll-section {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 1rem;
+}
+.horizontal-scroll-section::-webkit-scrollbar { display: none; }
+.horizontal-scroll-section > * { scroll-snap-align: start; flex-shrink: 0; }
+
+/* Hero headline — banky massive type */
+.hero-headline {
+  font-size: clamp(2.2rem, 7vw, 4.8rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-weight: 900;
+  text-transform: uppercase;
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+@media (max-width: 480px) {
+  .hero-headline {
+    font-size: clamp(1.8rem, 12vw, 3rem);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Hover underline — banky style */
+.hover-underline { position: relative; }
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--color-banky-blue);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-underline:hover::after { width: 100%; }
+
+/* Banky decorative swoosh line */
+.banky-line {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scroll progress bar — banky blue (GPU-composited via scaleX) */
+.scroll-progress-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9999;
+  background: transparent;
+  contain: layout style;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  background: var(--color-banky-blue);
+  will-change: width;
+}
+
+/* Blue dot — banky style pulsing */
+.blue-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-banky-blue);
+  box-shadow: 0 0 10px rgba(27, 63, 228, 0.5);
+}
+
+/* Counter glow */
+.counter-glow {
+  text-shadow: 0 2px 20px rgba(27, 63, 228, 0.15);
+}
+
+/* Banky card — white bg on yellow */
+.banky-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.banky-card:hover {
+  background: rgba(255, 255, 255, 0.75);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+}
+
+/* Dark section — banky footer style */
+.section-dark {
+  background: var(--color-banky-dark);
+  color: var(--color-banky-white);
+}
+
+/* Input field — banky style */
+.banky-input {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid rgba(204, 159, 0, 0.2);
+  border-radius: 14px;
+  font-size: 15px;
+  color: var(--color-banky-dark);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.banky-input::placeholder {
+  color: var(--color-banky-gray-light);
+}
+
+.banky-input:focus {
+  outline: none;
+  border-color: var(--color-banky-blue);
+  box-shadow: 0 0 0 3px rgba(27, 63, 228, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Mobile: reduce backdrop-filter blur for performance */
+@media (max-width: 768px) {
+  .glass-card,
+  .banky-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 }

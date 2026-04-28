@@ -1,45 +1,77 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Handshake, Mail } from 'lucide-react';
+
+const bankyEase = [0.16, 1, 0.3, 1] as const;
+const staggerC = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } };
+const staggerI = { hidden: { opacity: 0, y: 30, filter: 'blur(4px)' }, visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease: bankyEase } } };
+
+interface Sponsor { _id: string; name: string; logoUrl: string; website: string; tier: string; description: string; }
+const tierLabels: Record<string, string> = { title: 'Title Sponsors', gold: 'Gold Sponsors', silver: 'Silver Sponsors', community: 'Community Partners' };
+const tierOrder = ['title', 'gold', 'silver', 'community'];
 
 export default function Partners() {
+  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { (async () => { try { const r = await fetch('/api/content/sponsors'); if (r.ok) setSponsors(await r.json()); } catch {} setLoading(false); })(); }, []);
+
+  const grouped = tierOrder.map(t => ({ tier: t, label: tierLabels[t], items: sponsors.filter(s => s.tier === t) })).filter(g => g.items.length > 0);
+
   return (
-    <div className="min-h-screen bg-brand-surface pt-24 md:pt-32 pb-16 md:pb-24">
-      <div className="max-w-5xl mx-auto px-6 lg:px-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-3xl md:text-5xl font-display font-black text-brand-ocean tracking-tight uppercase">
-            Strategic <span className="text-brand-accent">Partners</span>
-          </h1>
-          <p className="text-slate-600 mt-4 text-[15px] md:text-base max-w-2xl mx-auto font-medium">
-            Collaborating to build a robust startup ecosystem in North Malabar.
+    <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+      <div className="max-w-4xl mx-auto px-5 lg:px-8">
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }} className="mb-14">
+          <p className="text-amber-600 text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+            <span className="w-8 h-px bg-amber-600 inline-block" />Ecosystem
           </p>
+          <h1 className="text-3xl md:text-[44px] font-display font-bold text-banky-dark mb-4 leading-tight">Strategic Partners</h1>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
+            className="text-banky-dark/50 text-[16px] max-w-2xl">Collaborating to build a robust startup ecosystem in North Malabar.</motion.p>
         </motion.div>
 
-        <div className="bg-white border-2 border-slate-200 p-8 md:p-12 text-center mb-8">
-          <div className="text-brand-ocean font-display font-black text-6xl md:text-8xl opacity-20 mb-4">TBA</div>
-          <h2 className="text-xl md:text-2xl font-display font-bold text-slate-900 mb-3">
-            Partnership Announcements Coming Soon
-          </h2>
-          <p className="text-[15px] text-slate-600 font-medium max-w-lg mx-auto leading-relaxed">
-            We are actively onboarding ecosystem partners, knowledge partners, and community organizations. Partnership details will be announced shortly.
-          </p>
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-16"><div className="w-7 h-7 border-2 border-banky-border border-t-banky-blue rounded-full animate-spin" /></div>
+        ) : grouped.length > 0 ? (
+          <div className="space-y-12">
+            {grouped.map(group => (
+              <div key={group.tier}>
+                <h2 className="text-[13px] font-semibold text-banky-blue uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                  <span className="w-4 h-px bg-banky-blue inline-block" />{group.label}
+                </h2>
+                <motion.div variants={staggerC} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {group.items.map((s) => (
+                    <motion.div key={s._id} variants={staggerI} className="card-hover p-6 banky-card group">
+                      <h3 className="text-[15px] font-semibold text-banky-dark group-hover:text-banky-blue transition-colors duration-300">{s.name}</h3>
+                      {s.website && <a href={s.website} target="_blank" rel="noreferrer" className="text-[12px] text-banky-blue hover:underline">{s.website.replace(/https?:\/\//, '')}</a>}
+                      {s.description && <p className="text-[13px] text-banky-dark/50 leading-relaxed mt-2">{s.description}</p>}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease: bankyEase }} className="text-center py-12">
+            <div className="w-16 h-16 rounded-2xl bg-white/50 border border-banky-border/30 flex items-center justify-center mx-auto mb-5">
+              <Handshake className="w-7 h-7 text-banky-blue" />
+            </div>
+            <h2 className="text-xl font-display font-bold text-banky-dark mb-3">Partnership announcements coming soon</h2>
+            <p className="text-[15px] text-banky-dark/50 max-w-md mx-auto">We are actively onboarding ecosystem partners and community organizations.</p>
+          </motion.div>
+        )}
 
-        <div className="bg-brand-ocean p-6 md:p-8 text-white">
-          <h3 className="text-lg font-display font-bold text-brand-accent uppercase tracking-wide mb-4">Become a Partner</h3>
-          <p className="text-sm text-slate-300 font-medium mb-4">
-            If your organization is interested in partnering with the Coastal Innovation Summit, reach out to us directly.
-          </p>
-          <a
-            href="mailto:contact@buildupkasaragod.org"
-            className="inline-block px-6 py-3 bg-brand-accent text-white font-bold uppercase tracking-widest text-xs hover:bg-teal-600 transition-colors"
-          >
-            Contact for Partnership
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, ease: bankyEase }}
+          className="banky-card p-7 md:p-10 mt-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-5"
+        >
+          <div>
+            <h3 className="text-lg font-display font-semibold text-banky-dark mb-1">Become a Partner</h3>
+            <p className="text-[14px] text-banky-dark/50 max-w-md">Interested in partnering with the Coastal Innovation Summit?</p>
+          </div>
+          <a href="mailto:contact@buildupkasaragod.org" className="btn-primary shrink-0 inline-flex items-center gap-2 px-6 py-3 font-semibold text-[14px] rounded-full">
+            <Mail className="w-4 h-4" /> Contact Us
           </a>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,0 +1,109 @@
+# ──────────────────────────────────────────────────────────
+# CI — Coastal Innovation Summit
+# Runs on every push & PR. Validates code quality.
+#
+# Pipeline:
+#   Frontend: Install → Lint → Typecheck → Build (parallel)
+#   Backend:  Install → Audit → Syntax check (parallel)
+#
+# Both jobs run in parallel for fast feedback (~2-3 min total).
+# Called by deploy.yml and deploy-frontend.yml as a prerequisite.
+# ──────────────────────────────────────────────────────────
+
+name: CI
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: [main]
+  workflow_call:   # allow other workflows to reuse this
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Frontend: Lint → Typecheck → Build ──────────────────
+  frontend:
+    name: Frontend Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npx eslint .
+
+      - name: Typecheck
+        run: npx tsc -b
+
+      - name: Build
+        run: npx vite build
+
+      - name: Report build size
+        run: |
+          echo "## 📦 Frontend Build" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          find dist/assets -type f \( -name "*.js" -o -name "*.css" \) | sort | while read f; do
+            SIZE=$(du -h "$f" | cut -f1)
+            echo "| \`$(basename $f)\` | $SIZE |" >> $GITHUB_STEP_SUMMARY
+          done
+
+  # ── Backend: Audit + Syntax ─────────────────────────────
+  backend:
+    name: Backend Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high || true
+        # non-blocking: logs warnings but won't fail the build
+        # change to strict (remove || true) when all vulns are fixed
+
+      - name: Syntax check (all .js files parse)
+        run: |
+          echo "→ Checking server .js files for syntax errors..."
+          ERRORS=0
+          for f in $(find . -name "*.js" -not -path "./node_modules/*"); do
+            if ! node --check "$f" 2>/dev/null; then
+              echo "  ❌ Syntax error: $f"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "❌ $ERRORS file(s) have syntax errors"
+            exit 1
+          fi
+          echo "  ✅ All server files pass syntax check"
