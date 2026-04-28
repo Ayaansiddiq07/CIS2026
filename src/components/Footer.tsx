@@ -38,7 +38,7 @@ export default function Footer() {
                 const Icon = s.icon;
                 return (
                   <a key={s.label} href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" aria-label={s.label}
-                    className="w-9 h-9 flex items-center justify-center text-white/40 hover:text-banky-yellow rounded-lg hover:bg-banky-yellow/[0.08] transition-all duration-500">
+                    className="w-9 h-9 flex items-center justify-center text-white/40 hover:text-banky-blue-light rounded-lg hover:bg-banky-blue/[0.08] transition-all duration-500">
                     <Icon className="w-4 h-4" />
                   </a>
                 );
@@ -54,7 +54,7 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5">
               {[{ l: 'Home', p: '/' }, { l: 'About', p: '/about' }, { l: 'Events', p: '/events' }, { l: 'Sessions', p: '/sessions' }, { l: 'Speakers', p: '/speakers' }, { l: 'Partners', p: '/partners' }, { l: 'FAQ', p: '/faq' }].map((link) => (
-                <li key={link.p}><Link to={link.p} className="text-[13px] text-white/40 hover:text-banky-yellow transition-colors duration-300">{link.l}</Link></li>
+                <li key={link.p}><Link to={link.p} className="text-[13px] text-white/40 hover:text-banky-blue-light transition-colors duration-300">{link.l}</Link></li>
               ))}
             </ul>
           </motion.div>
@@ -68,11 +68,11 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <Mail className="w-3.5 h-3.5 text-white/25 mt-1 shrink-0" />
-                <a href="mailto:contact@buildupkasaragod.org" className="text-[13px] text-white/40 hover:text-banky-yellow transition-colors duration-300 break-words">contact@buildupkasaragod.org</a>
+                <a href="mailto:contact@buildupkasaragod.org" className="text-[13px] text-white/40 hover:text-banky-blue-light transition-colors duration-300 break-words">contact@buildupkasaragod.org</a>
               </li>
               <li className="flex items-start gap-2">
                 <Globe className="w-3.5 h-3.5 text-white/25 mt-1 shrink-0" />
-                <a href="https://www.buildupkasaragod.org" target="_blank" rel="noreferrer" className="text-[13px] text-white/40 hover:text-banky-yellow transition-colors duration-300">buildupkasaragod.org</a>
+                <a href="https://www.buildupkasaragod.org" target="_blank" rel="noreferrer" className="text-[13px] text-white/40 hover:text-banky-blue-light transition-colors duration-300">buildupkasaragod.org</a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-white/25 mt-1 shrink-0" />
@@ -104,7 +104,7 @@ export default function Footer() {
       <div className="border-t border-white/[0.06]">
         <div className="max-w-6xl mx-auto px-5 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[11px] text-white/25">© 2026 Coastal Innovation Summit. All rights reserved.</p>
-          <p className="text-[11px] text-white/25">Organized by <a href="https://www.buildupkasaragod.org" target="_blank" rel="noreferrer" className="text-white/40 hover:text-banky-yellow transition-colors duration-300">BuildUp Kasaragod</a></p>
+          <p className="text-[11px] text-white/25">Organized by <a href="https://www.buildupkasaragod.org" target="_blank" rel="noreferrer" className="text-white/40 hover:text-banky-blue-light transition-colors duration-300">BuildUp Kasaragod</a></p>
         </div>
       </div>
     </footer>

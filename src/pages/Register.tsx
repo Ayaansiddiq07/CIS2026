@@ -95,7 +95,7 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+    <div className="min-h-screen bg-white pt-28 md:pt-36 pb-20 md:pb-28">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }} className="text-center mb-14">
           <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-4">Registration</p>
@@ -116,7 +116,7 @@ export default function Register() {
               >
                 {isFeatured && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-banky-blue/50 to-transparent" />}
                 {isFeatured && <p className="text-[11px] text-banky-blue font-semibold uppercase tracking-[0.2em] mb-3">Most Popular</p>}
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${isFeatured ? 'bg-banky-blue/[0.08] border border-banky-blue/15' : 'bg-banky-yellow/60 border border-banky-border/30'}`}>
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${isFeatured ? 'bg-banky-blue/[0.08] border border-banky-blue/15' : 'bg-gray-100 border border-gray-200'}`}>
                   <Icon className={`w-5 h-5 ${isFeatured ? 'text-banky-blue' : 'text-banky-dark/40'}`} />
                 </div>
                 <h3 className="text-lg font-bold font-display text-banky-dark mb-1">{ticket.label}</h3>
@@ -135,7 +135,7 @@ export default function Register() {
                 </ul>
                 <button onClick={() => openModal(ticket)} id={`select-${ticket.type}`}
                   className={`w-full py-3.5 text-center font-semibold text-[14px] rounded-full transition-all duration-500 cursor-pointer ${
-                    isFeatured ? 'btn-primary' : 'bg-banky-yellow/60 text-banky-dark border-2 border-banky-dark/20 hover:border-banky-blue hover:text-banky-blue'
+                    isFeatured ? 'btn-primary' : 'bg-gray-100 text-banky-dark border-2 border-gray-300 hover:border-banky-blue hover:text-banky-blue'
                   }`}
                 >Select</button>
               </motion.div>
@@ -212,7 +212,7 @@ export default function Register() {
                     <X className="w-8 h-8 text-red-500 mx-auto mb-3" />
                     <h3 className="text-xl font-bold text-banky-dark mb-2">{isDuplicate ? 'Already Registered' : 'Something Went Wrong'}</h3>
                     <p className="text-red-500 text-[14px] mb-6">{errorMsg}</p>
-                    <button onClick={() => setStep('form')} className="px-6 py-3 bg-banky-yellow text-banky-dark font-semibold text-[14px] rounded-full border-2 border-banky-dark/20 hover:border-banky-blue cursor-pointer transition-all duration-500">Try Again</button>
+                    <button onClick={() => setStep('form')} className="px-6 py-3 bg-white text-banky-dark font-semibold text-[14px] rounded-full border-2 border-banky-dark/20 hover:border-banky-blue cursor-pointer transition-all duration-500">Try Again</button>
                   </div>
                 )}
               </div>

@@ -6,7 +6,7 @@ const bankyEase = [0.16, 1, 0.3, 1] as const;
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-banky-yellow flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

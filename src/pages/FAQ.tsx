@@ -37,7 +37,7 @@ export default function FAQ() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: allFaqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }) }} />
-      <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+      <div className="min-h-screen bg-white pt-28 md:pt-36 pb-20 md:pb-28">
         <div className="max-w-2xl mx-auto px-5 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }} className="mb-12">
             <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
@@ -64,7 +64,7 @@ export default function FAQ() {
                   const key = `${catIdx}-${faqIdx}`;
                   const isOpen = openIndex === key;
                   return (
-                    <button key={key} onClick={() => toggle(key)} className="w-full text-left p-5 hover:bg-banky-yellow/30 transition-colors duration-500" aria-expanded={isOpen}>
+                    <button key={key} onClick={() => toggle(key)} className="w-full text-left p-5 hover:bg-gray-50 transition-colors duration-500" aria-expanded={isOpen}>
                       <div className="flex items-center justify-between gap-4">
                         <h3 className="text-[15px] font-medium text-banky-dark">{faq.q}</h3>
                         <ChevronDown className={`w-4 h-4 text-banky-dark/40 shrink-0 transition-transform duration-500 ${isOpen ? 'rotate-180 text-banky-blue' : ''}`} />

@@ -33,7 +33,7 @@ function ScrollToTop() {
 /** Loading spinner */
 function LoadingSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-banky-yellow">
+    <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="flex flex-col items-center gap-4">
         <div className="w-8 h-8 border-2 border-banky-border border-t-banky-blue rounded-full animate-spin" />
         <span className="font-display text-[12px] font-semibold text-banky-dark/40 uppercase tracking-[0.15em]">Loading</span>

@@ -26,7 +26,7 @@ export default function Contact() {
   }
 
   return (
-    <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+    <div className="min-h-screen bg-white pt-28 md:pt-36 pb-20 md:pb-28">
       <div className="max-w-3xl mx-auto px-5 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }}>
           <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">

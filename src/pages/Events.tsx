@@ -33,7 +33,7 @@ const keyNotes = [
 
 export default function Events() {
   return (
-    <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+    <div className="min-h-screen bg-white pt-28 md:pt-36 pb-20 md:pb-28">
       <div className="max-w-4xl mx-auto px-5 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }} className="mb-14">
           <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2"><span className="w-8 h-px bg-banky-blue inline-block" />Pre-Event</p>
@@ -93,7 +93,7 @@ export default function Events() {
                   return budgetRows.map((row, i) => {
                     if (!row.isSubtotal) rowNum++;
                     return (
-                      <tr key={i} className={`border-t border-banky-border/20 hover:bg-banky-yellow/30 ${row.isSubtotal ? 'bg-banky-yellow/20' : ''}`}>
+                      <tr key={i} className={`border-t border-banky-border/20 hover:bg-gray-50 ${row.isSubtotal ? 'bg-gray-50' : ''}`}>
                         <td className="py-3 px-4 text-[13px] text-banky-dark/40 font-mono">{row.isSubtotal ? '' : rowNum}</td>
                         <td className={`py-3 px-4 text-[13px] ${row.isSubtotal ? 'font-semibold text-banky-dark' : 'text-banky-dark/60'}`}>{row.head}</td>
                         <td className={`py-3 px-4 text-[13px] text-right font-mono ${row.isSubtotal ? 'font-semibold text-banky-blue' : 'text-banky-dark/60'}`}>₹{row.amount}</td>

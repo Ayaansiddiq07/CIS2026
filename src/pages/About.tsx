@@ -27,7 +27,7 @@ function Reveal({ children, className = '', direction = 'up' }: { children: Reac
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-banky-yellow pt-28 md:pt-36 pb-20 md:pb-28">
+    <div className="min-h-screen bg-white pt-28 md:pt-36 pb-20 md:pb-28">
       <div className="max-w-3xl mx-auto px-5 lg:px-8">
         {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: bankyEase }}>
@@ -67,7 +67,7 @@ export default function About() {
               </div>
             </div>
             <p className="text-[15px] text-banky-dark/60 mb-4">The venue will be a culturally and historically significant location in Kasaragod.</p>
-            <div className="bg-banky-yellow/40 p-4 rounded-xl border-l-2 border-l-amber-600">
+            <div className="bg-banky-blue/[0.06] p-4 rounded-xl border-l-2 border-l-banky-blue">
               <p className="text-[14px] text-banky-dark/60 italic">The chosen venue will send a clear message that innovation and entrepreneurship belong to this region's legacy.</p>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function About() {
               ].map((item, i) => {
                 const Icon = item.icon;
                 return (
-                  <motion.div key={i} variants={staggerChild} className="flex items-start gap-3 p-4 bg-banky-yellow/40 rounded-xl border border-banky-border/20 hover:border-banky-blue/20 transition-all duration-500 group">
+                  <motion.div key={i} variants={staggerChild} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-banky-blue/20 transition-all duration-500 group">
                     <Icon className="w-4 h-4 text-banky-blue shrink-0 mt-0.5 transition-transform duration-500 group-hover:scale-110" />
                     <p className="text-banky-dark/60 text-[14px] leading-relaxed">{item.text}</p>
                   </motion.div>

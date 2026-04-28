@@ -90,7 +90,7 @@ export default function Home() {
         }}
       />
 
-    <div className="min-h-screen bg-banky-yellow">
+    <div className="min-h-screen bg-white">
 
       {/* ━━━ HERO ━━━ */}
       <section ref={heroRef} className="relative w-full min-h-[100vh] flex items-center overflow-hidden">

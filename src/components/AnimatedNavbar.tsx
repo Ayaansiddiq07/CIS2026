@@ -43,7 +43,7 @@ export default function AnimatedNavbar() {
         transition={{ duration: 0.7, ease: bankyEase }}
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-700 ${
           scrolled
-            ? 'bg-banky-yellow/85 backdrop-blur-2xl border-b border-banky-border/30 shadow-[0_4px_30px_rgba(0,0,0,0.05)]'
+            ? 'bg-white/95 backdrop-blur-2xl border-b border-gray-200/60 shadow-[0_4px_30px_rgba(0,0,0,0.05)]'
             : 'bg-transparent'
         }`}
       >
@@ -188,7 +188,7 @@ export default function AnimatedNavbar() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.5, ease: bankyEase }}
-            className="fixed top-0 right-0 bottom-0 w-[80vw] max-w-xs z-[70] bg-banky-yellow flex flex-col shadow-2xl border-l border-banky-border/30"
+            className="fixed top-0 right-0 bottom-0 w-[80vw] max-w-xs z-[70] bg-white flex flex-col shadow-2xl border-l border-banky-border/30"
           >
             <div className="flex items-center justify-between px-5 py-5 border-b border-banky-border/40">
               <p className="text-[15px] font-display font-bold text-banky-dark">Menu</p>
