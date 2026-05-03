@@ -50,7 +50,7 @@ export default function AdminLayout() {
       >
         {/* Logo */}
         <div className="h-16 flex items-center gap-3 px-5 border-b border-white/[0.06]">
-          <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-teal-600 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
             <Shield className="w-4 h-4 text-white" />
           </div>
           <div>
@@ -77,7 +77,7 @@ export default function AdminLayout() {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all ${
+                className={`flex items-center gap-3 px-3 py-2.5 text-[13px] font-semibold transition-all ${
                   isActive
                     ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.04] border border-transparent'
@@ -105,13 +105,13 @@ export default function AdminLayout() {
             href="/"
             target="_blank"
             rel="noreferrer"
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] transition-colors mb-2"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] transition-colors mb-2"
           >
             ↗ View Website
           </a>
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             Sign Out

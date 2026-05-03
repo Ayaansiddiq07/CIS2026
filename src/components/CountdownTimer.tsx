@@ -30,7 +30,7 @@ export default function CountdownTimer() {
               transition={{ delay: i * 0.1, duration: 0.6, ease: bankyEase }}
               className="flex items-center gap-3 group"
             >
-              <div className="w-9 h-9 rounded-xl bg-banky-blue/[0.08] border border-banky-blue/10 flex items-center justify-center transition-all duration-500 group-hover:bg-banky-blue/15 group-hover:scale-110">
+              <div className="w-9 h-9 bg-banky-blue/[0.08] border border-banky-blue/10 flex items-center justify-center transition-all duration-500 group-hover:bg-banky-blue/15 group-hover:scale-110">
                 <Icon className="w-4 h-4 text-banky-blue" />
               </div>
               <div>

@@ -121,7 +121,7 @@ export default function AdminSpeakers() {
           <h2 className="text-white text-lg font-bold">Speakers</h2>
           <p className="text-slate-500 text-sm">{speakers.length} total speakers</p>
         </div>
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white text-xs font-bold rounded-lg cursor-pointer shadow-lg shadow-teal-500/20">
+        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white text-xs font-bold cursor-pointer shadow-lg shadow-teal-500/20">
           <Plus className="w-4 h-4" /> Add Speaker
         </button>
       </div>
@@ -134,12 +134,12 @@ export default function AdminSpeakers() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by name, email, organization..."
-          className="w-full bg-[#0a0f1e] border border-white/[0.08] rounded-lg pl-10 pr-4 py-2.5 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-teal-500/50 transition-colors"
+          className="w-full bg-[#0a0f1e] border border-white/[0.08] pl-10 pr-4 py-2.5 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-teal-500/50 transition-colors"
         />
       </div>
 
       {msg && (
-        <div className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium border ${
+        <div className={`flex items-center gap-2 px-3 py-2 text-xs font-medium border ${
           msgType === 'error'
             ? 'bg-red-500/10 border-red-500/20 text-red-400'
             : 'bg-teal-500/10 border-teal-500/20 text-teal-400'
@@ -151,7 +151,7 @@ export default function AdminSpeakers() {
       {/* Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
-          <div className="bg-[#0a0f1e] border border-white/[0.08] rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#0a0f1e] border border-white/[0.08] w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-white/[0.06]">
               <h3 className="text-white font-bold text-sm">{editing ? 'Edit Speaker' : 'Add Speaker'}</h3>
               <button onClick={() => setShowForm(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
@@ -160,16 +160,16 @@ export default function AdminSpeakers() {
               {(['name', 'email', 'phone', 'organization', 'topic'] as const).map(field => (
                 <div key={field}>
                   <label className="block text-slate-400 text-[10px] font-semibold uppercase tracking-widest mb-1">{field}</label>
-                  <input value={form[field]} onChange={e => setForm({ ...form, [field]: e.target.value })} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+                  <input value={form[field]} onChange={e => setForm({ ...form, [field]: e.target.value })} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
                 </div>
               ))}
               <div>
                 <label className="block text-slate-400 text-[10px] font-semibold uppercase tracking-widest mb-1">Bio</label>
-                <textarea value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} rows={3} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors resize-none" />
+                <textarea value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} rows={3} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors resize-none" />
               </div>
               <div>
                 <label className="block text-slate-400 text-[10px] font-semibold uppercase tracking-widest mb-1">Status</label>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as 'pending' | 'approved' | 'rejected' })} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors">
+                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as 'pending' | 'approved' | 'rejected' })} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors">
                   <option value="pending" className="bg-[#0a0f1e]">Pending</option>
                   <option value="approved" className="bg-[#0a0f1e]">Approved</option>
                   <option value="rejected" className="bg-[#0a0f1e]">Rejected</option>
@@ -177,8 +177,8 @@ export default function AdminSpeakers() {
               </div>
             </div>
             <div className="p-5 border-t border-white/[0.06] flex gap-3 justify-end">
-              <button onClick={() => setShowForm(false)} className="px-4 py-2 text-slate-400 text-xs font-semibold rounded-lg hover:text-white cursor-pointer">Cancel</button>
-              <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-5 py-2 bg-teal-500 text-white text-xs font-bold rounded-lg disabled:opacity-50 cursor-pointer">
+              <button onClick={() => setShowForm(false)} className="px-4 py-2 text-slate-400 text-xs font-semibold hover:text-white cursor-pointer">Cancel</button>
+              <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-5 py-2 bg-teal-500 text-white text-xs font-bold disabled:opacity-50 cursor-pointer">
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                 {saving ? 'Saving...' : 'Save'}
               </button>
@@ -188,7 +188,7 @@ export default function AdminSpeakers() {
       )}
 
       {/* Table */}
-      <div className="bg-[#0a0f1e] border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="bg-[#0a0f1e] border border-white/[0.06] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -214,7 +214,7 @@ export default function AdminSpeakers() {
                   <td className="px-4 py-3">
                     <button
                       onClick={() => quickStatus(s._id, s.status === 'approved' ? 'pending' : 'approved')}
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider cursor-pointer ${
+                      className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider cursor-pointer ${
                         s.status === 'approved' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
                         s.status === 'rejected' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
                         'bg-amber-500/10 text-amber-400 border border-amber-500/20'
@@ -225,8 +225,8 @@ export default function AdminSpeakers() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
-                      <button onClick={() => openEdit(s)} className="p-1.5 text-slate-500 hover:text-teal-400 rounded cursor-pointer"><Pencil className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => handleDelete(s._id)} className="p-1.5 text-slate-500 hover:text-red-400 rounded cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => openEdit(s)} className="p-1.5 text-slate-500 hover:text-teal-400 cursor-pointer"><Pencil className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleDelete(s._id)} className="p-1.5 text-slate-500 hover:text-red-400 cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </td>
                 </tr>

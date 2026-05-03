@@ -58,7 +58,7 @@ export default function About() {
           <h2 className="text-2xl md:text-3xl font-display font-bold text-banky-dark mb-6">Venue & Significance</h2>
           <div className="banky-card p-6 md:p-8 relative overflow-hidden">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-11 h-11 rounded-xl bg-amber-500/[0.1] border border-amber-500/20 flex items-center justify-center">
+              <div className="w-11 h-11 bg-amber-500/[0.1] border border-amber-500/20 flex items-center justify-center">
                 <MapPin className="w-5 h-5 text-amber-600" />
               </div>
               <div>
@@ -67,7 +67,7 @@ export default function About() {
               </div>
             </div>
             <p className="text-[15px] text-banky-dark/60 mb-4">The venue will be a culturally and historically significant location in Kasaragod.</p>
-            <div className="bg-banky-blue/[0.06] p-4 rounded-xl border-l-2 border-l-banky-blue">
+            <div className="bg-banky-blue/[0.06] p-4 border-l-2 border-l-banky-blue">
               <p className="text-[14px] text-banky-dark/60 italic">The chosen venue will send a clear message that innovation and entrepreneurship belong to this region's legacy.</p>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function About() {
               ].map((item, i) => {
                 const Icon = item.icon;
                 return (
-                  <motion.div key={i} variants={staggerChild} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-banky-blue/20 transition-all duration-500 group">
+                  <motion.div key={i} variants={staggerChild} className="flex items-start gap-3 p-4 bg-gray-50 border border-gray-200 hover:border-banky-blue/20 transition-all duration-500 group">
                     <Icon className="w-4 h-4 text-banky-blue shrink-0 mt-0.5 transition-transform duration-500 group-hover:scale-110" />
                     <p className="text-banky-dark/60 text-[14px] leading-relaxed">{item.text}</p>
                   </motion.div>

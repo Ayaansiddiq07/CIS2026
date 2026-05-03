@@ -51,8 +51,8 @@ export default function Events() {
                 <div className="text-[13px] text-banky-dark/50 mb-5">Sahyadri College · In collaboration with BuildUp Kasaragod</div>
                 <div className="flex items-center gap-2 mb-7 text-[13px] text-banky-dark/50"><span className="blue-dot" />Date — to be announced</div>
                 <div className="flex flex-wrap gap-3">
-                  <Link to="/register" className="btn-primary inline-flex items-center gap-2 px-6 py-3 font-semibold text-[14px] rounded-full">Register Interest <ArrowRight className="w-3.5 h-3.5" /></Link>
-                  <Link to="/contact" className="btn-outline inline-flex items-center gap-2 px-6 py-3 font-medium text-[14px] rounded-full">Contact Us</Link>
+                  <Link to="/register" className="btn-primary inline-flex items-center gap-2 px-6 py-3 font-semibold text-[14px]">Register Interest <ArrowRight className="w-3.5 h-3.5" /></Link>
+                  <Link to="/contact" className="btn-outline inline-flex items-center gap-2 px-6 py-3 font-medium text-[14px]">Contact Us</Link>
                 </div>
               </div>
               <div className="text-center lg:pt-4">
@@ -139,12 +139,12 @@ export default function Events() {
         </Reveal>
 
         <Reveal>
-          <section className="rounded-2xl p-8 md:p-12 text-center bg-banky-dark">
+          <section className="p-8 md:p-12 text-center bg-banky-dark">
             <h2 className="text-xl md:text-2xl font-display font-bold text-white mb-4">Ready to build something?</h2>
             <p className="text-white/50 text-[14px] max-w-md mx-auto mb-8">Gather your team and build at the pre-event hackathon.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link to="/register" className="btn-primary inline-flex items-center justify-center gap-2 px-7 py-3.5 font-semibold text-[14px] rounded-full">Register Now <ArrowRight className="w-3.5 h-3.5" /></Link>
-              <Link to="/contact" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-white font-medium text-[14px] border border-white/20 rounded-full hover:border-white/40 transition-all duration-500">Sponsor This Event</Link>
+              <Link to="/register" className="btn-primary inline-flex items-center justify-center gap-2 px-7 py-3.5 font-semibold text-[14px]">Register Now <ArrowRight className="w-3.5 h-3.5" /></Link>
+              <Link to="/contact" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-white font-medium text-[14px] border border-white/20 hover:border-white/40 transition-all duration-500">Sponsor This Event</Link>
             </div>
           </section>
         </Reveal>

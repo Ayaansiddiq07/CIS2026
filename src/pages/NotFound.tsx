@@ -34,7 +34,7 @@ export default function NotFound() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6, ease: bankyEase }}
         >
-          <Link to="/" className="btn-primary inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-[15px] rounded-full">
+          <Link to="/" className="btn-primary inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-[15px]">
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </Link>
         </motion.div>

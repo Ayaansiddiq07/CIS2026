@@ -112,11 +112,11 @@ export default function Register() {
             const isFeatured = ticket.featured;
             return (
               <motion.div key={ticket.type} variants={staggerI}
-                className={`card-hover flex flex-col p-7 rounded-2xl relative overflow-hidden ${isFeatured ? 'banky-card border-banky-blue/25 shadow-lg shadow-banky-blue/5' : 'banky-card'}`}
+                className={`card-hover flex flex-col p-7 relative overflow-hidden ${isFeatured ? 'banky-card border-banky-blue/25 shadow-lg shadow-banky-blue/5' : 'banky-card'}`}
               >
                 {isFeatured && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-banky-blue/50 to-transparent" />}
                 {isFeatured && <p className="text-[11px] text-banky-blue font-semibold uppercase tracking-[0.2em] mb-3">Most Popular</p>}
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${isFeatured ? 'bg-banky-blue/[0.08] border border-banky-blue/15' : 'bg-gray-100 border border-gray-200'}`}>
+                <div className={`w-11 h-11 flex items-center justify-center mb-5 ${isFeatured ? 'bg-banky-blue/[0.08] border border-banky-blue/15' : 'bg-gray-100 border border-gray-200'}`}>
                   <Icon className={`w-5 h-5 ${isFeatured ? 'text-banky-blue' : 'text-banky-dark/40'}`} />
                 </div>
                 <h3 className="text-lg font-bold font-display text-banky-dark mb-1">{ticket.label}</h3>
@@ -134,7 +134,7 @@ export default function Register() {
                   ))}
                 </ul>
                 <button onClick={() => openModal(ticket)} id={`select-${ticket.type}`}
-                  className={`w-full py-3.5 text-center font-semibold text-[14px] rounded-full transition-all duration-500 cursor-pointer ${
+                  className={`w-full py-3.5 text-center font-semibold text-[14px] transition-all duration-500 cursor-pointer ${
                     isFeatured ? 'btn-primary' : 'bg-gray-100 text-banky-dark border-2 border-gray-300 hover:border-banky-blue hover:text-banky-blue'
                   }`}
                 >Select</button>
@@ -144,9 +144,9 @@ export default function Register() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: bankyEase }}
-          className="mt-14 rounded-2xl p-7 md:p-10 text-center bg-banky-dark">
+          className="mt-14 p-7 md:p-10 text-center bg-banky-dark">
           <p className="text-white/50 text-[14px] mb-3">Need something custom or have sponsorship questions?</p>
-          <Link to="/contact" className="btn-primary inline-block px-6 py-3 font-semibold text-[14px] rounded-full">Contact Organizers</Link>
+          <Link to="/contact" className="btn-primary inline-block px-6 py-3 font-semibold text-[14px]">Contact Organizers</Link>
         </motion.div>
       </div>
 
@@ -157,7 +157,7 @@ export default function Register() {
             className="fixed inset-0 bg-black/50 backdrop-blur-md z-50 flex items-center justify-center p-4"
             onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
           >
-            <motion.div variants={modalV} initial="hidden" animate="visible" exit="exit" className="banky-card w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-banky-border/30">
+            <motion.div variants={modalV} initial="hidden" animate="visible" exit="exit" className="banky-card w-full max-w-md overflow-hidden shadow-2xl border border-banky-border/30">
               <div className="bg-banky-gold/30 px-6 py-5 flex items-center justify-between border-b border-banky-border/20">
                 <div>
                   <h2 className="text-banky-dark font-display font-bold text-lg">{selectedTicket.label}</h2>
@@ -186,7 +186,7 @@ export default function Register() {
                       {errors.phone && <p className="text-red-500 text-[12px] mt-1">{errors.phone.message}</p>}
                     </div>
                     <button type="submit" disabled={isSubmitting} id="submit-registration"
-                      className="btn-primary w-full py-3.5 font-semibold text-[14px] rounded-full disabled:opacity-50 cursor-pointer mt-2"
+                      className="btn-primary w-full py-3.5 font-semibold text-[14px] disabled:opacity-50 cursor-pointer mt-2"
                     >{isSubmitting ? 'Processing...' : `Pay ${selectedTicket.price}`}</button>
                     <p className="text-[11px] text-banky-dark/40 text-center">Secured by Razorpay. Details are encrypted.</p>
                   </form>
@@ -204,7 +204,7 @@ export default function Register() {
                     <h3 className="text-xl font-bold text-banky-dark mb-2">Registration Confirmed!</h3>
                     <p className="text-banky-dark/50 text-[14px] mb-1">Your {selectedTicket.label} pass is booked.</p>
                     <p className="text-banky-dark/40 text-[12px] mb-6">Check email for QR code and details.</p>
-                    <button onClick={closeModal} className="btn-primary px-6 py-3 font-semibold text-[14px] rounded-full cursor-pointer">Done</button>
+                    <button onClick={closeModal} className="btn-primary px-6 py-3 font-semibold text-[14px] cursor-pointer">Done</button>
                   </motion.div>
                 )}
                 {step === 'error' && (
@@ -212,7 +212,7 @@ export default function Register() {
                     <X className="w-8 h-8 text-red-500 mx-auto mb-3" />
                     <h3 className="text-xl font-bold text-banky-dark mb-2">{isDuplicate ? 'Already Registered' : 'Something Went Wrong'}</h3>
                     <p className="text-red-500 text-[14px] mb-6">{errorMsg}</p>
-                    <button onClick={() => setStep('form')} className="px-6 py-3 bg-white text-banky-dark font-semibold text-[14px] rounded-full border-2 border-banky-dark/20 hover:border-banky-blue cursor-pointer transition-all duration-500">Try Again</button>
+                    <button onClick={() => setStep('form')} className="px-6 py-3 bg-white text-banky-dark font-semibold text-[14px] border-2 border-banky-dark/20 hover:border-banky-blue cursor-pointer transition-all duration-500">Try Again</button>
                   </div>
                 )}
               </div>

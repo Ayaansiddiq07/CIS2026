@@ -47,7 +47,7 @@ export default function AdminContacts() {
         {contacts.map(c => (
           <div
             key={c._id}
-            className="bg-[#0a0f1e] border border-white/[0.06] rounded-xl overflow-hidden hover:border-white/[0.12] transition-colors"
+            className="bg-[#0a0f1e] border border-white/[0.06] overflow-hidden hover:border-white/[0.12] transition-colors"
           >
             <button
               onClick={() => setExpanded(expanded === c._id ? null : c._id)}
@@ -78,7 +78,7 @@ export default function AdminContacts() {
           </div>
         ))}
         {contacts.length === 0 && (
-          <div className="bg-[#0a0f1e] border border-white/[0.06] rounded-xl px-5 py-8 text-center text-slate-500 text-sm">
+          <div className="bg-[#0a0f1e] border border-white/[0.06] px-5 py-8 text-center text-slate-500 text-sm">
             No contact messages yet.
           </div>
         )}

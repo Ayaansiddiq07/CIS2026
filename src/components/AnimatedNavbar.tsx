@@ -49,21 +49,14 @@ export default function AnimatedNavbar() {
       >
         <div className="max-w-6xl mx-auto px-5 lg:px-8 h-[72px] flex items-center justify-between">
           {/* Brand */}
-          <Link to="/" className="z-50 flex items-center gap-2.5 group">
+          <Link to="/" className="z-50 flex items-center group">
             <img
-              src="/logo.avif"
-              alt="CIS"
-              className="h-9 w-9 object-cover rounded-xl shadow-sm transition-transform duration-500 group-hover:scale-105"
-              style={{ mixBlendMode: 'multiply' }}
-              width={36}
-              height={36}
+              src="/cis-logo.png"
+              alt="Coastal Innovation Summit"
+              className="h-14 sm:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-[1.03]"
               loading="eager"
               decoding="async"
             />
-            <div className="hidden sm:block leading-tight">
-              <p className="text-[14px] font-display font-bold text-banky-dark tracking-tight">Coastal Innovation Summit</p>
-              <p className="text-[11px] text-banky-dark/40 -mt-0.5 tracking-wide">Kasaragod, Kerala · 2026</p>
-            </div>
           </Link>
 
           {/* Doodle arrow pointing to logo — desktop only */}
@@ -73,7 +66,7 @@ export default function AnimatedNavbar() {
             transition={{ delay: 1.2, duration: 0.8, ease: bankyEase }}
             className="hidden lg:flex items-center -ml-1"
           >
-            <svg width="100" height="45" viewBox="0 0 100 45" fill="none" className="text-white -mr-1">
+            <svg width="100" height="45" viewBox="0 0 100 45" fill="none" className="text-banky-dark/40 -mr-1">
               {/* Loopy doodle arrow — curls down, loops, then arrowhead points left toward logo */}
               <motion.path
                 d="M92 38 C82 42, 72 35, 65 28 C58 20, 55 10, 48 8 C40 6, 38 18, 42 24 C46 30, 38 32, 32 28 C26 24, 22 18, 16 14 C12 12, 8 10, 5 12"
@@ -102,7 +95,7 @@ export default function AnimatedNavbar() {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 2.6, duration: 0.5, ease: bankyEase }}
-              className="text-white text-[11px] font-display font-bold uppercase tracking-[0.2em]"
+              className="text-banky-dark/50 text-[11px] font-display font-bold uppercase tracking-[0.2em]"
             >
               Home
             </motion.span>
@@ -152,7 +145,7 @@ export default function AnimatedNavbar() {
               transition={{ delay: 0.5, duration: 0.5, ease: bankyEase }}
             >
               <Link to="/register"
-                className="btn-primary px-6 py-2.5 text-[14px] font-semibold rounded-full"
+                className="btn-primary px-6 py-2.5 text-[14px] font-semibold"
               >
                 Register →
               </Link>
@@ -217,7 +210,7 @@ export default function AnimatedNavbar() {
             </nav>
 
             <div className="px-5 pb-6">
-              <Link to="/register" onClick={close} className="btn-primary block w-full py-3.5 text-center font-semibold text-[15px] rounded-full">
+              <Link to="/register" onClick={close} className="btn-primary block w-full py-3.5 text-center font-semibold text-[15px]">
                 Register Now
               </Link>
             </div>

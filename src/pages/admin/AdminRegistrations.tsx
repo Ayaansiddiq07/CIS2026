@@ -62,12 +62,12 @@ export default function AdminRegistrations() {
           <h2 className="text-white text-lg font-bold">Registrations</h2>
           <p className="text-slate-500 text-sm">{registrations.length} total registrations</p>
         </div>
-        <div className="flex gap-1 bg-[#0a0f1e] border border-white/[0.06] rounded-lg p-1">
+        <div className="flex gap-1 bg-[#0a0f1e] border border-white/[0.06] p-1">
           {['all', 'paid', 'pending', 'failed'].map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 text-[11px] font-semibold rounded-md capitalize transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 text-[11px] font-semibold capitalize transition-colors cursor-pointer ${
                 filter === f ? 'bg-teal-500/20 text-teal-400' : 'text-slate-500 hover:text-white'
               }`}
             >
@@ -77,7 +77,7 @@ export default function AdminRegistrations() {
         </div>
       </div>
 
-      <div className="bg-[#0a0f1e] border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="bg-[#0a0f1e] border border-white/[0.06] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -98,7 +98,7 @@ export default function AdminRegistrations() {
                   </td>
                   <td className="px-4 py-3 text-white text-sm font-medium">₹{r.amount.toLocaleString('en-IN')}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusColors[r.status] || ''}`}>{r.status}</span>
+                    <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider border ${statusColors[r.status] || ''}`}>{r.status}</span>
                   </td>
                   <td className="px-4 py-3 text-slate-500 text-xs">{new Date(r.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                 </tr>

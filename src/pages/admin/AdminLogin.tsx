@@ -35,7 +35,7 @@ export default function AdminLogin() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl mb-4 shadow-lg shadow-teal-500/20">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-teal-400 to-teal-600 mb-4 shadow-lg shadow-teal-500/20">
             <Shield className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-white text-xl font-bold tracking-wide">CIS Admin Panel</h1>
@@ -43,10 +43,10 @@ export default function AdminLogin() {
         </div>
 
         {/* Card */}
-        <div className="bg-[#0a0f1e] border border-white/[0.06] rounded-2xl p-6 shadow-2xl">
+        <div className="bg-[#0a0f1e] border border-white/[0.06] p-6 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2.5 text-red-400 text-xs font-medium">
+              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-2.5 text-red-400 text-xs font-medium">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 {error}
               </div>
@@ -61,7 +61,7 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-4 py-3 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/20 transition-colors"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-4 py-3 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/20 transition-colors"
                 placeholder="admin@cis2026.com"
               />
             </div>
@@ -75,7 +75,7 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-4 py-3 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/20 transition-colors"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-4 py-3 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/20 transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -83,7 +83,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm rounded-lg hover:from-teal-400 hover:to-teal-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20"
+              className="w-full py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm hover:from-teal-400 hover:to-teal-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20"
             >
               {loading ? (
                 <>

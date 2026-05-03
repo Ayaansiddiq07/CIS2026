@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import BankyTextReveal from '../components/BankyTextReveal';
 
 const bankyEase = [0.16, 1, 0.3, 1] as const;
 
@@ -43,7 +44,9 @@ export default function FAQ() {
             <p className="text-banky-blue text-[13px] font-semibold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
               <span className="w-8 h-px bg-banky-blue inline-block" />Help
             </p>
-            <h1 className="text-3xl md:text-[44px] font-display font-bold text-banky-dark mb-4 leading-tight">Frequently Asked Questions</h1>
+            <h1 className="text-3xl md:text-[44px] font-display font-bold text-banky-dark mb-4 leading-tight">
+              <BankyTextReveal text="Frequently Asked Questions" by="word" delay={0.08} />
+            </h1>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
               className="text-[16px] text-banky-dark/50">Everything you need to know about the Coastal Innovation Summit.</motion.p>
           </motion.div>
@@ -90,10 +93,10 @@ export default function FAQ() {
           ))}
 
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: bankyEase }}
-            className="rounded-2xl p-7 md:p-10 text-center mt-8 bg-banky-dark"
+            className="p-7 md:p-10 text-center mt-8 bg-banky-dark"
           >
             <p className="text-white/50 text-[14px] mb-4">Still have questions?</p>
-            <Link to="/contact" className="btn-primary inline-block px-6 py-3 font-semibold text-[14px] rounded-full">Contact Organizers</Link>
+            <Link to="/contact" className="btn-primary inline-block px-6 py-3 font-semibold text-[14px]">Contact Organizers</Link>
           </motion.div>
         </div>
       </div>

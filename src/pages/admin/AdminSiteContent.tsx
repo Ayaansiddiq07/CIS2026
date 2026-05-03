@@ -119,7 +119,7 @@ export default function AdminSiteContent() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white text-xs font-bold rounded-lg hover:from-teal-400 hover:to-teal-500 disabled:opacity-50 cursor-pointer shadow-lg shadow-teal-500/20"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white text-xs font-bold hover:from-teal-400 hover:to-teal-500 disabled:opacity-50 cursor-pointer shadow-lg shadow-teal-500/20"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
           {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
@@ -127,58 +127,58 @@ export default function AdminSiteContent() {
       </div>
 
       {/* Event Info */}
-      <div className="bg-[#0a0f1e] border border-white/[0.06] rounded-xl p-5">
+      <div className="bg-[#0a0f1e] border border-white/[0.06] p-5">
         <h3 className="text-white text-sm font-bold mb-4 uppercase tracking-wider">Event Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-slate-400 text-[11px] font-semibold uppercase tracking-widest mb-1.5">Date</label>
-            <input value={data.eventInfo.date} onChange={e => updateEventInfo('date', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+            <input value={data.eventInfo.date} onChange={e => updateEventInfo('date', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
           </div>
           <div>
             <label className="block text-slate-400 text-[11px] font-semibold uppercase tracking-widest mb-1.5">Venue</label>
-            <input value={data.eventInfo.venue} onChange={e => updateEventInfo('venue', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+            <input value={data.eventInfo.venue} onChange={e => updateEventInfo('venue', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
           </div>
           <div className="md:col-span-2">
             <label className="block text-slate-400 text-[11px] font-semibold uppercase tracking-widest mb-1.5">Tagline</label>
-            <input value={data.eventInfo.tagline} onChange={e => updateEventInfo('tagline', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+            <input value={data.eventInfo.tagline} onChange={e => updateEventInfo('tagline', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
           </div>
         </div>
       </div>
 
       {/* Pricing */}
-      <div className="bg-[#0a0f1e] border border-white/[0.06] rounded-xl p-5">
+      <div className="bg-[#0a0f1e] border border-white/[0.06] p-5">
         <h3 className="text-white text-sm font-bold mb-4 uppercase tracking-wider">Ticket Pricing</h3>
         <div className="space-y-6">
           {tiers.map(tier => {
             const ticket = data.pricing[tier];
             return (
-              <div key={tier} className="border border-white/[0.06] rounded-lg p-4">
+              <div key={tier} className="border border-white/[0.06] p-4">
                 <h4 className="text-teal-400 text-xs font-bold uppercase tracking-widest mb-3">{tier} Tier</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div>
                     <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-1">Label</label>
-                    <input value={ticket.label} onChange={e => updateTicket(tier, 'label', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+                    <input value={ticket.label} onChange={e => updateTicket(tier, 'label', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
                   </div>
                   <div>
                     <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-1">Price (₹)</label>
-                    <input type="number" value={ticket.price} onChange={e => updateTicket(tier, 'price', parseInt(e.target.value) || 0)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+                    <input type="number" value={ticket.price} onChange={e => updateTicket(tier, 'price', parseInt(e.target.value) || 0)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
                   </div>
                   <div>
                     <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-1">Display Price</label>
-                    <input value={ticket.priceDisplay} onChange={e => updateTicket(tier, 'priceDisplay', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+                    <input value={ticket.priceDisplay} onChange={e => updateTicket(tier, 'priceDisplay', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
                   </div>
                   <div>
                     <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-1">Unit</label>
-                    <input value={ticket.unit} onChange={e => updateTicket(tier, 'unit', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+                    <input value={ticket.unit} onChange={e => updateTicket(tier, 'unit', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
                   </div>
                 </div>
                 <div className="mt-3">
                   <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-1">Description</label>
-                  <input value={ticket.description} onChange={e => updateTicket(tier, 'description', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
+                  <input value={ticket.description} onChange={e => updateTicket(tier, 'description', e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors" />
                 </div>
                 <div className="mt-3">
                   <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-1">Features (one per line)</label>
-                  <textarea value={ticket.features.join('\n')} onChange={e => updateFeatures(tier, e.target.value)} rows={3} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors resize-none" />
+                  <textarea value={ticket.features.join('\n')} onChange={e => updateFeatures(tier, e.target.value)} rows={3} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-none px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-colors resize-none" />
                 </div>
                 <div className="mt-3 flex items-center gap-2">
                   <input type="checkbox" checked={ticket.featured} onChange={e => updateTicket(tier, 'featured', e.target.checked)} className="accent-teal-500" id={`featured-${tier}`} />

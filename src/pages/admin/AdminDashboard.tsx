@@ -97,10 +97,10 @@ export default function AdminDashboard() {
           return (
             <div
               key={card.label}
-              className="bg-[#0a0f1e] border border-white/[0.06] rounded-xl p-5 hover:border-white/[0.12] transition-colors"
+              className="bg-[#0a0f1e] border border-white/[0.06] p-5 hover:border-white/[0.12] transition-colors"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${card.color} flex items-center justify-center shadow-lg`}>
+                <div className={`w-10 h-10 bg-gradient-to-br ${card.color} flex items-center justify-center shadow-lg`}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
               </div>
@@ -112,9 +112,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* Database Reset Section */}
-      <div className="bg-[#0a0f1e] border border-red-500/20 rounded-xl p-6">
+      <div className="bg-[#0a0f1e] border border-red-500/20 p-6">
         <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-lg shrink-0">
+          <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-lg shrink-0">
             <AlertTriangle className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
@@ -125,12 +125,12 @@ export default function AdminDashboard() {
             {!showResetConfirm ? (
               <button
                 onClick={() => { setShowResetConfirm(true); setResetPhase('confirm'); }}
-                className="px-5 py-2.5 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold rounded-lg hover:bg-red-500/20 transition-colors cursor-pointer"
+                className="px-5 py-2.5 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors cursor-pointer"
               >
                 Reset Database
               </button>
             ) : (
-              <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-4 space-y-3">
+              <div className="bg-red-500/5 border border-red-500/20 p-4 space-y-3">
                 <p className="text-red-300 text-xs font-semibold">
                   ⚠️ This action is IRREVERSIBLE. Type <code className="bg-red-500/20 px-1.5 py-0.5 rounded font-mono">RESET</code> to confirm.
                 </p>
@@ -139,13 +139,13 @@ export default function AdminDashboard() {
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   placeholder="Type RESET to confirm"
-                  className="w-full max-w-xs bg-white/[0.04] border border-red-500/30 rounded-lg px-3 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-red-500/50 transition-colors"
+                  className="w-full max-w-xs bg-white/[0.04] border border-red-500/30 px-3 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-red-500/50 transition-colors"
                 />
                 <div className="flex gap-3">
                   <button
                     onClick={handleReset}
                     disabled={confirmText !== 'RESET' || resetPhase === 'processing'}
-                    className="flex items-center gap-2 px-5 py-2 bg-red-600 text-white text-xs font-bold rounded-lg disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-red-500 transition-colors"
+                    className="flex items-center gap-2 px-5 py-2 bg-red-600 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-red-500 transition-colors"
                   >
                     {resetPhase === 'processing' ? (
                       <>
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
                   </button>
                   <button
                     onClick={() => { setShowResetConfirm(false); setResetPhase('idle'); setConfirmText(''); }}
-                    className="px-4 py-2 text-slate-400 text-xs font-semibold rounded-lg hover:text-white cursor-pointer"
+                    className="px-4 py-2 text-slate-400 text-xs font-semibold hover:text-white cursor-pointer"
                   >
                     Cancel
                   </button>

@@ -141,7 +141,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: 0.1, duration: 0.6, ease: bankyEase }}
-                className="inline-flex items-center gap-2.5 px-4 py-2 bg-banky-blue/[0.08] text-banky-blue text-[12px] font-semibold tracking-[0.15em] uppercase rounded-full mb-7 border border-banky-blue/15"
+                className="inline-flex items-center gap-2.5 px-4 py-2 bg-banky-blue/[0.08] text-banky-blue text-[12px] font-semibold tracking-[0.15em] uppercase mb-7 border border-banky-blue/15"
               >
                 <span className="blue-dot" />
                 Kasaragod, Kerala · 2026
@@ -191,12 +191,12 @@ export default function Home() {
                 className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
               >
                 <Link to="/register"
-                  className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-4 font-semibold text-[15px] rounded-full"
+                  className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-4 font-semibold text-[15px]"
                 >
                   Register Now <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link to="/sessions"
-                  className="btn-outline inline-flex items-center justify-center gap-2 px-8 py-4 font-medium text-[15px] rounded-full"
+                  className="btn-outline inline-flex items-center justify-center gap-2 px-8 py-4 font-medium text-[15px]"
                 >
                   View Schedule <CalendarDays className="w-4 h-4" />
                 </Link>
@@ -309,7 +309,7 @@ export default function Home() {
                   {/* Subtle top glow bar */}
                   <div className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{ background: `linear-gradient(90deg, transparent, ${zone.color}, transparent)` }} />
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all duration-500 group-hover:scale-110"
+                  <div className="w-12 h-12 flex items-center justify-center mb-5 transition-all duration-500 group-hover:scale-110"
                     style={{ backgroundColor: `${zone.color}12`, color: zone.color }}
                   >
                     <Icon className="w-5 h-5" />
@@ -334,7 +334,7 @@ export default function Home() {
       <section className="py-28 md:py-36 relative overflow-hidden bg-banky-dark text-white">
         <div className="max-w-3xl mx-auto px-5 lg:px-8 text-center relative z-10">
           <RevealSection direction="scale">
-            <div className="w-14 h-14 rounded-2xl bg-banky-blue/[0.12] border border-banky-blue/20 flex items-center justify-center mx-auto mb-7">
+            <div className="w-14 h-14 bg-banky-blue/[0.12] border border-banky-blue/20 flex items-center justify-center mx-auto mb-7">
               <Sparkles className="w-6 h-6 text-banky-blue-light" />
             </div>
             <h2 className="text-3xl md:text-[48px] font-display font-bold text-white mb-6 leading-tight">
@@ -346,12 +346,12 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link to="/register"
-                className="btn-primary inline-flex items-center justify-center gap-2 px-9 py-4 font-semibold text-[15px] rounded-full"
+                className="btn-primary inline-flex items-center justify-center gap-2 px-9 py-4 font-semibold text-[15px]"
               >
                 Register Now <ArrowRight className="w-4 h-4" />
               </Link>
               <Link to="/about"
-                className="inline-flex items-center justify-center text-white/70 px-9 py-4 font-medium text-[15px] rounded-full border border-white/20 hover:border-white/40 hover:text-white transition-all duration-500"
+                className="inline-flex items-center justify-center text-white/70 px-9 py-4 font-medium text-[15px] border border-white/20 hover:border-white/40 hover:text-white transition-all duration-500"
               >
                 Learn More
               </Link>
@@ -366,7 +366,7 @@ export default function Home() {
           <RevealSection>
             <div className="banky-card p-8 md:p-12 relative overflow-hidden">
               <div className="flex flex-col md:flex-row items-start gap-8">
-                <img src="/organiser.avif" alt="BuildUp Kasaragod" className="w-20 h-20 object-cover rounded-2xl shrink-0 ring-2 ring-banky-border" width={80} height={80} loading="lazy" decoding="async" />
+                <img src="/organiser.avif" alt="BuildUp Kasaragod" className="w-20 h-20 object-cover shrink-0 ring-2 ring-banky-border" width={80} height={80} loading="lazy" decoding="async" />
                 <div>
                   <p className="text-[12px] text-banky-dark/50 font-medium uppercase tracking-[0.2em] mb-1">Organized by</p>
                   <h3 className="text-xl font-display font-bold text-banky-dark mb-1">BuildUp Kasaragod</h3>
@@ -376,11 +376,11 @@ export default function Home() {
                   </p>
                   <div className="flex gap-3">
                     <a href="https://www.buildupkasaragod.org" target="_blank" rel="noreferrer"
-                      className="btn-primary px-5 py-2.5 font-semibold text-[13px] rounded-full">
+                      className="btn-primary px-5 py-2.5 font-semibold text-[13px]">
                       Visit Website
                     </a>
                     <a href="mailto:contact@buildupkasaragod.org"
-                      className="btn-outline px-5 py-2.5 font-medium text-[13px] rounded-full">
+                      className="btn-outline px-5 py-2.5 font-medium text-[13px]">
                       Get in Touch
                     </a>
                   </div>

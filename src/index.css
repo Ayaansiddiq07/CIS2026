@@ -43,9 +43,14 @@
     letter-spacing: -0.011em;
   }
 
-  h1 { line-height: 0.92; letter-spacing: -0.045em; font-weight: 900; }
-  h2 { line-height: 1.05; letter-spacing: -0.035em; font-weight: 700; }
-  h3 { line-height: 1.2; letter-spacing: -0.02em; font-weight: 600; }
+  /* Headings always use display font (Outfit) for consistency */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+
+  h1 { line-height: 0.95; letter-spacing: -0.04em; font-weight: 800; }
+  h2 { line-height: 1.08; letter-spacing: -0.03em; font-weight: 700; }
+  h3 { line-height: 1.2; letter-spacing: -0.015em; font-weight: 600; }
   h4, h5, h6 { line-height: 1.25; letter-spacing: -0.005em; font-weight: 600; }
   p { line-height: 1.75; font-weight: 400; }
   strong, b { font-weight: 600; }
@@ -58,6 +63,13 @@
   }
 
   a { text-decoration-skip-ink: auto; }
+
+  /* Improved touch targets for mobile */
+  @media (max-width: 768px) {
+    button, a, [role="button"] {
+      min-height: 44px;
+    }
+  }
 }
 
 /* ── Selection ── */
@@ -142,6 +154,12 @@
   to { stroke-dashoffset: 0; }
 }
 
+/* Page entrance animation */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -162,6 +180,7 @@
 .animate-scale-in { animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-marquee { animation: marquee 30s linear infinite; }
+.animate-page-enter { animation: pageEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
@@ -202,6 +221,7 @@
   overflow: hidden;
   background: var(--color-banky-blue);
   color: var(--color-banky-white);
+  border-radius: 0;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -230,6 +250,7 @@
   background: transparent;
   color: var(--color-banky-dark);
   border: 2px solid var(--color-banky-dark);
+  border-radius: 0;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -274,7 +295,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 16px;
+  border-radius: 0;
   background: rgba(0, 148, 133, 0.08);
   border: 1px solid rgba(0, 148, 133, 0.12);
   font-family: var(--font-display);
@@ -308,14 +329,14 @@
   font-size: clamp(2.2rem, 7vw, 4.8rem);
   line-height: 0.95;
   letter-spacing: -0.03em;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   overflow-wrap: normal;
   word-break: keep-all;
 }
 @media (max-width: 480px) {
   .hero-headline {
-    font-size: clamp(1.8rem, 12vw, 3rem);
+    font-size: clamp(2rem, 11vw, 3rem);
     letter-spacing: -0.02em;
   }
 }
@@ -377,7 +398,7 @@
 .banky-card {
   background: #FFFFFF;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 20px;
+  border-radius: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -400,8 +421,9 @@
   padding: 14px 18px;
   background: #FFFFFF;
   border: 1.5px solid rgba(0, 0, 0, 0.12);
-  border-radius: 14px;
+  border-radius: 0;
   font-size: 15px;
+  font-family: var(--font-sans);
   color: var(--color-banky-dark);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -417,6 +439,10 @@
   background: #FFFFFF;
 }
 
+/* ══════════════════════════════════
+   MOBILE RESPONSIVE OPTIMIZATIONS
+   ══════════════════════════════════ */
+
 /* Mobile: reduce backdrop-filter blur for performance */
 @media (max-width: 768px) {
   .glass-card,
@@ -424,4 +450,22 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
+
+  /* Disable hover transforms on touch devices — prevents sticky hover states */
+  .card-hover:hover,
+  .banky-card:hover {
+    transform: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Smaller padding for mobile cards */
+  .banky-input {
+    padding: 12px 14px;
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+}
+
+/* Small phone screens */
+@media (max-width: 380px) {
+  html { font-size: 14px; }
 }

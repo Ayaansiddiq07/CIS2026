@@ -53,7 +53,7 @@ export default function Contact() {
                 <CheckCircle2 className="w-8 h-8 text-banky-blue mx-auto mb-3" />
                 <h3 className="text-xl font-semibold text-banky-dark mb-1">Message Sent</h3>
                 <p className="text-banky-dark/50 text-[14px] mb-6">We will get back to you soon.</p>
-                <button onClick={() => setSubmitted(false)} className="btn-primary px-5 py-2.5 font-semibold text-[14px] rounded-full cursor-pointer">Send Another</button>
+                <button onClick={() => setSubmitted(false)} className="btn-primary px-5 py-2.5 font-semibold text-[14px] cursor-pointer">Send Another</button>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -79,8 +79,8 @@ export default function Contact() {
                   <textarea id="contact-message" rows={5} {...register('message')} placeholder="Tell us what you need..." className="banky-input resize-none" />
                   {errors.message && <p className="text-red-500 text-[12px] mt-1">{errors.message.message}</p>}
                 </div>
-                {error && <p className="text-red-500 text-[14px] bg-red-500/[0.08] p-3 rounded-xl border border-red-500/15">{error}</p>}
-                <button type="submit" disabled={isSubmitting} id="submit-contact" className="btn-primary w-full md:w-auto px-7 py-3.5 font-semibold text-[14px] rounded-full disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
+                {error && <p className="text-red-500 text-[14px] bg-red-500/[0.08] p-3 border border-red-500/15">{error}</p>}
+                <button type="submit" disabled={isSubmitting} id="submit-contact" className="btn-primary w-full md:w-auto px-7 py-3.5 font-semibold text-[14px] disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
                   {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</> : <><Send className="w-4 h-4" /> Send Message</>}
                 </button>
               </form>

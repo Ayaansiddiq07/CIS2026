@@ -1,8 +1,17 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { Clock, Coffee, Mic, Gamepad2, MessageSquare, Rocket, Store } from 'lucide-react';
 import BankyTextReveal from '../components/BankyTextReveal';
 
 const bankyEase = [0.16, 1, 0.3, 1] as const;
+const staggerC = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } };
+const staggerI = { hidden: { opacity: 0, y: 25 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: bankyEase } } };
+
+function Reveal({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  return <motion.div ref={ref} initial={{ opacity: 0, y: 50 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, ease: bankyEase }} className={className}>{children}</motion.div>;
+}
 
 const schedule = [
   { time: '08:00 – 08:30', title: 'Registration & Check-In', type: 'welcome', icon: Clock },
@@ -40,14 +49,22 @@ export default function Sessions() {
           <h1 className="text-3xl md:text-[44px] font-display font-bold text-banky-dark mb-4 leading-tight">
             <BankyTextReveal text="Program Schedule" by="char" delay={0.08} />
           </h1>
-          <p className="text-banky-dark/50 text-[16px] max-w-2xl">A strict, time-disciplined schedule. No filler sessions.</p>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
+            className="text-banky-dark/50 text-[16px] max-w-2xl">A strict, time-disciplined schedule. No filler sessions.</motion.p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Stage */}
           <div className="lg:col-span-2">
-            <h2 className="text-[13px] font-semibold text-banky-blue uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: bankyEase }}
+              className="text-[13px] font-semibold text-banky-blue uppercase tracking-[0.2em] mb-5 flex items-center gap-2"
+            >
               <span className="w-4 h-px bg-banky-blue inline-block" />Main Stage
-            </h2>
+            </motion.h2>
             <div className="space-y-1.5">
               {schedule.map((item, i) => {
                 const isBreak = item.type === 'break';
@@ -58,18 +75,18 @@ export default function Sessions() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true, margin: '-30px' }}
                     transition={{ duration: 0.5, delay: i * 0.03, ease: bankyEase }}
-                    className={`flex gap-4 p-4 rounded-xl transition-all duration-500 group ${
+                    className={`flex flex-col sm:flex-row gap-1 sm:gap-4 p-3 sm:p-4 transition-all duration-500 group ${
                       isBreak ? 'bg-amber-500/[0.08] border border-amber-500/15' :
                       isSpecial ? 'bg-purple-500/[0.08] border border-purple-500/15' :
                       'hover:bg-white/40 border border-transparent hover:border-banky-border/30'
                     }`}
                   >
-                    <span className="text-[12px] text-banky-dark/40 font-mono w-[110px] shrink-0 pt-0.5">{item.time}</span>
+                    <span className="text-[11px] sm:text-[12px] text-banky-dark/40 font-mono sm:w-[110px] shrink-0 sm:pt-0.5">{item.time}</span>
                     <div>
-                      <h3 className={`text-[15px] font-semibold transition-colors duration-300 ${
+                      <h3 className={`text-[14px] sm:text-[15px] font-semibold transition-colors duration-300 ${
                         isBreak ? 'text-amber-600' : isSpecial ? 'text-purple-600' : 'text-banky-dark group-hover:text-banky-blue'
                       }`}>{item.title}</h3>
-                      {item.desc && <p className="text-[13px] text-banky-dark/40 mt-0.5">{item.desc}</p>}
+                      {item.desc && <p className="text-[12px] sm:text-[13px] text-banky-dark/40 mt-0.5">{item.desc}</p>}
                     </div>
                   </motion.div>
                 );
@@ -77,44 +94,43 @@ export default function Sessions() {
             </div>
           </div>
 
+          {/* Sidebar */}
           <div>
-            <h2 className="text-[13px] font-semibold text-banky-blue uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
-              <span className="w-4 h-px bg-banky-blue inline-block" />Parallel Zones
-            </h2>
-            <div className="space-y-2">
-              {parallelZones.map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <motion.div key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.08, duration: 0.5, ease: bankyEase }}
-                    className="card-hover p-4 banky-card group"
-                  >
-                    <span className="text-[12px] text-banky-dark/40 font-mono block mb-1">{item.time}</span>
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-4 h-4 text-banky-blue transition-transform duration-500 group-hover:scale-110" />
-                      <h3 className="text-[14px] font-semibold text-banky-dark group-hover:text-banky-blue transition-colors duration-300">{item.event}</h3>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+            <Reveal>
+              <h2 className="text-[13px] font-semibold text-banky-blue uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                <span className="w-4 h-px bg-banky-blue inline-block" />Parallel Zones
+              </h2>
+              <motion.div variants={staggerC} initial="hidden" whileInView="visible" viewport={{ once: true }} className="space-y-2">
+                {parallelZones.map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <motion.div key={i} variants={staggerI} className="card-hover p-4 banky-card group">
+                      <span className="text-[12px] text-banky-dark/40 font-mono block mb-1">{item.time}</span>
+                      <div className="flex items-center gap-2">
+                        <Icon className="w-4 h-4 text-banky-blue transition-transform duration-500 group-hover:scale-110" />
+                        <h3 className="text-[14px] font-semibold text-banky-dark group-hover:text-banky-blue transition-colors duration-300">{item.event}</h3>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </Reveal>
 
-            <h2 className="text-[13px] font-semibold text-banky-blue uppercase tracking-[0.2em] mt-8 mb-5 flex items-center gap-2">
-              <span className="w-4 h-px bg-banky-blue inline-block" />Exhibition Stalls
-            </h2>
-            <div className="banky-card p-5">
-              <ul className="space-y-3 text-[14px] text-banky-dark/60">
-                {['Tribal Enterprise Stall', 'Kasaragod Culture & Heritage', 'Agri-Tech & Rural Innovation', 'Tech & Student Startups'].map((stall) => (
-                  <li key={stall} className="flex items-center gap-2">
-                    <span className="blue-dot" style={{ width: 4, height: 4 }} />
-                    {stall}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <Reveal className="mt-8">
+              <h2 className="text-[13px] font-semibold text-banky-blue uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                <span className="w-4 h-px bg-banky-blue inline-block" />Exhibition Stalls
+              </h2>
+              <motion.div variants={staggerC} initial="hidden" whileInView="visible" viewport={{ once: true }} className="banky-card p-5">
+                <ul className="space-y-3 text-[14px] text-banky-dark/60">
+                  {['Tribal Enterprise Stall', 'Kasaragod Culture & Heritage', 'Agri-Tech & Rural Innovation', 'Tech & Student Startups'].map((stall, i) => (
+                    <motion.li key={stall} variants={staggerI} className="flex items-center gap-2">
+                      <span className="blue-dot" style={{ width: 4, height: 4 }} />
+                      {stall}
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            </Reveal>
           </div>
         </div>
       </div>

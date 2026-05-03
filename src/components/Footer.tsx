@@ -19,12 +19,8 @@ export default function Footer() {
         >
           {/* Brand column */}
           <motion.div variants={staggerChild} className="sm:col-span-2 lg:col-span-1">
-            <Link to="/" className="flex items-center gap-2.5 mb-5 group">
-              <img src="/logo.avif" alt="CIS" className="h-9 w-9 object-cover rounded-xl transition-transform duration-500 group-hover:scale-110" style={{ mixBlendMode: 'screen' }} width={36} height={36} loading="lazy" decoding="async" />
-              <div>
-                <p className="text-[14px] font-display font-bold text-white leading-tight">Coastal Innovation Summit</p>
-                <p className="text-[11px] text-white/40 leading-tight">Kasaragod, Kerala · 2026</p>
-              </div>
+            <Link to="/" className="flex items-center mb-5 group">
+              <img src="/cis-logo.png" alt="Coastal Innovation Summit" className="h-14 w-auto object-contain transition-transform duration-500 group-hover:scale-105 brightness-0 invert" loading="lazy" decoding="async" />
             </Link>
             <p className="text-[13px] leading-relaxed text-white/40 max-w-[260px] mb-5">
               A structured, beginner-friendly startup learning experience for the North Malabar region.
@@ -38,7 +34,7 @@ export default function Footer() {
                 const Icon = s.icon;
                 return (
                   <a key={s.label} href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" aria-label={s.label}
-                    className="w-9 h-9 flex items-center justify-center text-white/40 hover:text-banky-blue-light rounded-lg hover:bg-banky-blue/[0.08] transition-all duration-500">
+                    className="w-9 h-9 flex items-center justify-center text-white/40 hover:text-banky-blue-light hover:bg-banky-blue/[0.08] transition-all duration-500">
                     <Icon className="w-4 h-4" />
                   </a>
                 );
@@ -87,14 +83,14 @@ export default function Footer() {
               <span className="w-4 h-px bg-banky-blue inline-block" />
               Event
             </h4>
-            <div className="bg-white/[0.06] p-4 rounded-xl mb-4 border border-white/[0.06]">
+            <div className="bg-white/[0.06] p-4 mb-4 border border-white/[0.06]">
               <div className="flex items-center gap-2 mb-1">
                 <span className="blue-dot" />
                 <span className="text-white/70 font-medium text-[13px]">Details coming soon</span>
               </div>
               <p className="text-[12px] text-white/35">Date and venue will be announced shortly.</p>
             </div>
-            <Link to="/register" className="btn-primary flex items-center justify-center gap-2 w-full py-3 text-[13px] font-semibold rounded-full">
+            <Link to="/register" className="btn-primary flex items-center justify-center gap-2 w-full py-3 text-[13px] font-semibold">
               Register Now <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </motion.div>
