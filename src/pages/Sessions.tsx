@@ -122,7 +122,7 @@ export default function Sessions() {
               </h2>
               <motion.div variants={staggerC} initial="hidden" whileInView="visible" viewport={{ once: true }} className="banky-card p-5">
                 <ul className="space-y-3 text-[14px] text-banky-dark/60">
-                  {['Tribal Enterprise Stall', 'Kasaragod Culture & Heritage', 'Agri-Tech & Rural Innovation', 'Tech & Student Startups'].map((stall, i) => (
+                  {['Tribal Enterprise Stall', 'Kasaragod Culture & Heritage', 'Agri-Tech & Rural Innovation', 'Tech & Student Startups'].map((stall) => (
                     <motion.li key={stall} variants={staggerI} className="flex items-center gap-2">
                       <span className="blue-dot" style={{ width: 4, height: 4 }} />
                       {stall}
